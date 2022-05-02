@@ -22,7 +22,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AnyDexDB\AnyDexDB.csproj" />
     <ProjectReference Include="..\NLibrary\NL.csproj" />
   </ItemGroup>
 
