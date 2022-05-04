@@ -33,6 +33,9 @@ namespace AnyDex {
 			builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
 			builder.Services.AddSingleton<WeatherForecastService>();        // <- To remove
 			builder.Services.AddAntDesign();
+			builder.Services.AddControllers(
+				options => options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true
+			);
 		}
 
 		private static void ConfigureHttp(WebApplication app) {
