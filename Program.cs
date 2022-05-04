@@ -10,10 +10,9 @@ namespace AnyDex {
 		public static void Main(string[] args) {
 			WebApplication app;
 			WebApplicationBuilder builder;
-			string connectionString;
+			string connectionString = "user id=root;host=localhost;database=anydex;password=root";
 
 			builder = WebApplication.CreateBuilder(args);
-			connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 			AddServices(builder, connectionString);
 
 			app = builder.Build();
@@ -33,6 +32,7 @@ namespace AnyDex {
 			builder.Services.AddServerSideBlazor();
 			builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
 			builder.Services.AddSingleton<WeatherForecastService>();        // <- To remove
+			builder.Services.AddAntDesign();
 		}
 
 		private static void ConfigureHttp(WebApplication app) {
