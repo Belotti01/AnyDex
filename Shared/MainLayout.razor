@@ -1,20 +1,69 @@
 ﻿@inherits LayoutComponentBase
 
-<PageTitle>AnyDex</PageTitle>
-
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
-
-    <main>
-        <div class="top-row px-4 auth">
-            <LoginDisplay />
-            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+<Layout Style="min-height: 100vh; ">
+    <Sider Collapsible Collapsed=@collapsed OnCollapse=@onCollapse>
+        <div class="">
+            <img class="mx-auto d-block" style="height: 60px;" src="https://www.freepngimg.com/thumb/symbol/61606-logo-circle-brand-ibm-download-hd-png.png"/>
+            <!-- LOGO HERE -->
         </div>
+        <Menu Theme="MenuTheme.Dark" DefaultSelectedKeys=@(new[]{"1"}) Mode="MenuMode.Inline">
+            <MenuItem Key="1">
+                <Icon Type="pie-chart" Theme="outline" />
+                <span>Option 1</span>
+            </MenuItem>
+            <MenuItem Key="2">
+                <Icon Type="desktop" Theme="outline" />
+                <span>Option 2</span>
+            </MenuItem>
+            @{
+                RenderFragment sub1Title =
+                    @<span>
+                        <Icon Type="user" Theme="outline"/>
+                        <span>User</span>
+                    </span>;
+            }
+            <SubMenu Key="sub1" TitleTemplate=sub1Title>
+                <MenuItem Key="3">Tom</MenuItem>
+                <MenuItem Key="4">Bill</MenuItem>
+                <MenuItem Key="5">Alex</MenuItem>
+            </SubMenu>
+            @{
+                RenderFragment sub2Title =
+                    @<span>
+                        <Icon Type="team" Theme="outline"/>
+                        <span>Team</span>
+                    </span>;
+            }
+            <SubMenu Key="sub2" TitleTemplate=sub2Title>
+                <MenuItem Key="6">Team 1</MenuItem>
+                <MenuItem Key="8">Team 2</MenuItem>
+            </SubMenu>
+            <MenuItem Key="9">
+                <Icon Type="file" Theme="outline"/>
+            </MenuItem>
+        </Menu>
+    </Sider>
+    <Layout Class="site-layout" >
+        <Header Class="site-layout-background" Style=" padding: 0 ;" ></Header>
+        <Content Style="margin:0 16px;" >
+            <Breadcrumb Style="margin:16px 0;">
+                <BreadcrumbItem>User</BreadcrumbItem>
+                <BreadcrumbItem>Bill</BreadcrumbItem>
+            </Breadcrumb>
+            <div class="site-layout-background" style="padding: 24px; min-height: 360px">
+                Bill is a cat.
+            </div>
+        </Content>
+        <Footer Style="text-align:center ">AnyDex ©2022</Footer>
+    </Layout>
+</Layout>
 
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
-</div>
+
+@code {
+    bool collapsed;
+
+   void onCollapse(bool collapsed) {
+        Console.WriteLine(collapsed);
+        this.collapsed =collapsed;
+    }
+}

@@ -1,5 +1,6 @@
 using AnyDex.Areas.Identity;
 using AnyDex.Data;
+using AnyDexDB;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -33,8 +34,13 @@ namespace AnyDex {
 			builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
 			builder.Services.AddSingleton<WeatherForecastService>();        // <- To remove
 			builder.Services.AddAntDesign();
+			// Suppress null-value warning for entity attributes with the [Required] data validation property
 			builder.Services.AddControllers(
 				options => options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true
+			);
+			// Inject DbContextFactory
+			builder.Services.AddDbContextFactory<AnyDexDb>(options => 
+				options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString))
 			);
 		}
 
