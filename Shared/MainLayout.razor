@@ -1,62 +1,48 @@
 ﻿@inherits LayoutComponentBase
 
-<Layout Style="min-height: 100vh; ">
-    <Sider Collapsible Collapsed=@collapsed OnCollapse=@onCollapse>
-        <div class="">
-            <img class="mx-auto d-block" style="height: 60px;" src="https://www.freepngimg.com/thumb/symbol/61606-logo-circle-brand-ibm-download-hd-png.png"/>
-            <!-- LOGO HERE -->
-        </div>
-        <Menu Theme="MenuTheme.Dark" DefaultSelectedKeys=@(new[]{"1"}) Mode="MenuMode.Inline">
-            <MenuItem Key="1">
-                <Icon Type="pie-chart" Theme="outline" />
-                <span>Option 1</span>
-            </MenuItem>
-            <MenuItem Key="2">
-                <Icon Type="desktop" Theme="outline" />
-                <span>Option 2</span>
-            </MenuItem>
-            @{
-                RenderFragment sub1Title =
-                    @<span>
-                        <Icon Type="user" Theme="outline"/>
-                        <span>User</span>
-                    </span>;
-            }
-            <SubMenu Key="sub1" TitleTemplate=sub1Title>
-                <MenuItem Key="3">Tom</MenuItem>
-                <MenuItem Key="4">Bill</MenuItem>
-                <MenuItem Key="5">Alex</MenuItem>
+
+<Layout>
+    <Header Class="header">
+        <div class="logo" />
+        <Menu Theme="MenuTheme.Dark" Mode="MenuMode.Horizontal" DefaultSelectedKeys=@(new []{"1"})>
+            <MenuItem Key="1" RouterLink="/">Index</MenuItem>
+            <MenuItem Key="2" RouterLink="/counter">Counter</MenuItem>
+            <SubMenu Key="3" Title="Account" Placement="Placement.BottomCenter" >
+                <AuthorizeView> 
+                    <Authorized>
+                        <MenuItem Key="4" RouterLink="/Identity/Account/Logout" Title="Login"></MenuItem>
+                    </Authorized>
+                    <NotAuthorized>
+                        <MenuItem Key="4" RouterLink="/Identity/Account/Login" Title="Register"></MenuItem>
+                        <MenuItem Key="5" RouterLink="/Identity/Account/Login" Title="Login"></MenuItem>
+                    </NotAuthorized>
+                </AuthorizeView>
             </SubMenu>
-            @{
-                RenderFragment sub2Title =
-                    @<span>
-                        <Icon Type="team" Theme="outline"/>
-                        <span>Team</span>
-                    </span>;
-            }
-            <SubMenu Key="sub2" TitleTemplate=sub2Title>
-                <MenuItem Key="6">Team 1</MenuItem>
-                <MenuItem Key="8">Team 2</MenuItem>
-            </SubMenu>
-            <MenuItem Key="9">
-                <Icon Type="file" Theme="outline"/>
-            </MenuItem>
         </Menu>
-    </Sider>
-    <Layout Class="site-layout" >
-        <Header Class="site-layout-background" Style=" padding: 0 ;" ></Header>
-        <Content Style="margin:0 16px;" >
-            <Breadcrumb Style="margin:16px 0;">
-                <BreadcrumbItem>User</BreadcrumbItem>
-                <BreadcrumbItem>Bill</BreadcrumbItem>
-            </Breadcrumb>
-            <div class="site-layout-background" style="padding: 24px; min-height: 360px">
-                Bill is a cat.
-            </div>
+    </Header>
+    
+    <Layout Style=" padding: 0 24px 24px;">
+        <Content Class="site-layout-background" Style="padding: 24px; margin: 0; min-height: 100vh;">
+            @Body
         </Content>
-        <Footer Style="text-align:center ">AnyDex ©2022</Footer>
+        <Footer Style="text-align: center;">AnyDex ©2022</Footer>
     </Layout>
+
 </Layout>
+
+<style>
+    .logo {
+        width: 120px;
+        height: 31px;
+        background: rgba(255, 255, 255, 0.2);
+        margin: 16px 28px 16px 0;
+        float: left;
+    }
+
+    .site-layout-background {
+        background: #fff;
+    }
+</style>
 
 
 @code {

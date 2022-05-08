@@ -1,0 +1,28 @@
+﻿@typeparam TSelf where TSelf : BaseComponent
+
+@code {
+	[Inject, NotNull]
+	private AnyDexDbFactory? DbContextFactory { get; set; }
+	protected AnyDexDb? DbContext;
+
+	/// <summary>
+	/// Create a new default instance of <see cref="AnyDexDb"/>.
+	/// </summary>
+	protected AnyDexDb GenerateDbContext() {
+		return DbContextFactory.CreateDbContext();
+	}
+
+	/// <summary>
+	/// If the <see cref="DbContext"/> has no value, set it to a new instance.
+	/// </summary>
+	/// <param name="overwriteCurrentContext">
+	/// Whether to overwrite the current instance of the <see cref="DbContext"/>
+	/// if it's been already loaded.
+	/// </param>
+	[MemberNotNull(nameof(DbContext))]
+	protected void LoadDbContext(bool overwriteCurrentContext = false) {
+		if(DbContext is null || overwriteCurrentContext) {
+			DbContext = GenerateDbContext();
+		}
+	}
+}

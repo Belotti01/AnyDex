@@ -1,6 +1,5 @@
 using AnyDex.Areas.Identity;
 using AnyDex.Data;
-using AnyDexDB;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +14,7 @@ namespace AnyDex {
 
 			builder = WebApplication.CreateBuilder(args);
 			AddServices(builder, connectionString);
+			ConfigureIdentity(builder);
 
 			app = builder.Build();
 			ConfigureHttp(app);
@@ -34,6 +34,8 @@ namespace AnyDex {
 			builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
 			builder.Services.AddSingleton<WeatherForecastService>();        // <- To remove
 			builder.Services.AddAntDesign();
+			// Add support for ASP.NET MVC Localization
+			builder.Services.AddLocalization();
 			// Suppress null-value warning for entity attributes with the [Required] data validation property
 			builder.Services.AddControllers(
 				options => options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true
@@ -42,6 +44,42 @@ namespace AnyDex {
 			builder.Services.AddDbContextFactory<AnyDexDb>(options => 
 				options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString))
 			);
+		}
+
+		/// <summary>
+		/// Set options for the identity Authentication and Authorization services.
+		/// </summary>
+		private static void ConfigureIdentity(WebApplicationBuilder builder) {
+			builder.Services.Configure<IdentityOptions>(options => {
+				// Password settings
+				options.Password.RequireDigit = false;
+				options.Password.RequireLowercase = true;
+				options.Password.RequireNonAlphanumeric = false;
+				options.Password.RequireUppercase = false;
+				options.Password.RequiredLength = 6;
+				options.Password.RequiredUniqueChars = 2;
+
+				// Lockout settings
+				options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+				options.Lockout.MaxFailedAccessAttempts = 5;
+				options.Lockout.AllowedForNewUsers = false;
+
+				// User settings
+				options.User.AllowedUserNameCharacters =
+				"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+				options.User.RequireUniqueEmail = true;
+			});
+
+			builder.Services.ConfigureApplicationCookie(options =>
+			{
+				// Cookie settings
+				options.Cookie.HttpOnly = true;
+				options.ExpireTimeSpan = TimeSpan.FromMinutes(10);
+
+				options.LoginPath = "/Identity/Account/Login";
+				options.AccessDeniedPath = "/Identity/Account/AccessDenied";
+				options.SlidingExpiration = true;
+			});
 		}
 
 		private static void ConfigureHttp(WebApplication app) {
