@@ -1,4 +1,7 @@
-﻿@inherits LayoutComponentBase
+﻿@using Microsoft.AspNetCore.Identity
+@inherits LayoutComponentBase
+
+@inject SignInManager<User> SignInManager
 
 
 <Layout>
@@ -10,10 +13,10 @@
             <SubMenu Key="3" Title="Account" Placement="Placement.BottomCenter" >
                 <AuthorizeView> 
                     <Authorized>
-                        <MenuItem Key="4" RouterLink="/Identity/Account/Logout" Title="Login"></MenuItem>
+                        <MenuItem Key="4" OnClick="Logout" Title="Logout"></MenuItem>
                     </Authorized>
                     <NotAuthorized>
-                        <MenuItem Key="4" RouterLink="/Identity/Account/Login" Title="Register"></MenuItem>
+                        <MenuItem Key="4" RouterLink="/Identity/Account/Register" Title="Register"></MenuItem>
                         <MenuItem Key="5" RouterLink="/Identity/Account/Login" Title="Login"></MenuItem>
                     </NotAuthorized>
                 </AuthorizeView>
@@ -48,8 +51,12 @@
 @code {
     bool collapsed;
 
-   void onCollapse(bool collapsed) {
+    public void onCollapse(bool collapsed) {
         Console.WriteLine(collapsed);
         this.collapsed =collapsed;
+    }
+
+    public async Task Logout() {
+        // Implement logout
     }
 }

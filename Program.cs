@@ -3,7 +3,7 @@ using AnyDex.Data;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-
+using System.Diagnostics;
 
 namespace AnyDex {
 	public static class Program {
@@ -20,18 +20,27 @@ namespace AnyDex {
 			ConfigureHttp(app);
 			ConfigureEndpoints(app);
 
+			InitializeDatabase();
+
 			app.Run();
 		}
 
+		private static void InitializeDatabase() {
+			using AnyDexDb db = new();
+			// Create or update database if needed
+			db.Database.Migrate();
+
+			if(Debugger.IsAttached) {
+				// Generate test data in the database
+				AnyDexDB.Testing.DummyGenerator.GenerateData();
+			}
+		}
+
 		private static void AddServices(WebApplicationBuilder builder, string connectionString) {
-			builder.Services.AddDbContext<ApplicationDbContext>(options =>
-				options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 			builder.Services.AddDatabaseDeveloperPageExceptionFilter();
-			builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-				.AddEntityFrameworkStores<ApplicationDbContext>();
 			builder.Services.AddRazorPages();
 			builder.Services.AddServerSideBlazor();
-			builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
+			builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<User>>();
 			builder.Services.AddSingleton<WeatherForecastService>();        // <- To remove
 			builder.Services.AddAntDesign();
 			// Add support for ASP.NET MVC Localization
@@ -50,6 +59,12 @@ namespace AnyDex {
 		/// Set options for the identity Authentication and Authorization services.
 		/// </summary>
 		private static void ConfigureIdentity(WebApplicationBuilder builder) {
+			builder.Services.AddIdentity<User, Role>()
+				.AddDefaultTokenProviders()
+				.AddEntityFrameworkStores<AnyDexDb>()
+				.AddDefaultUI()
+				.AddDefaultTokenProviders();
+
 			builder.Services.Configure<IdentityOptions>(options => {
 				// Password settings
 				options.Password.RequireDigit = false;
