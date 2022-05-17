@@ -1,11 +1,45 @@
-﻿@inherits Component
+﻿@typeparam TSelf
+@inherits Component
 
 @code {
+    [CascadingParameter, NotNull]
+    public Task<AuthenticationState>? AuthenticationStateTask { get; set; }
+    [Inject, NotNull]
+    public SignInManager<User>? SignInManager { get; set; }
+    public UserManager<User> UserManager => SignInManager.UserManager;
+    [Inject, NotNull]
+    public NotificationService? Notification { get; set; }
 
-	public string Localize(string text) {
-		// Unimplemented for now
-		return text;
-	}
+    /// <summary>
+    /// Logs' output stream accessor object for components.
+    /// </summary>
+    [Inject, NotNull]
+    protected ILogger<TSelf>? Logger { get; private set; }
+
+    public string Localize(string text) {
+        // Unimplemented for now
+        return text;
+    }
+
+    public void ShowNotification(string title, string description, NotificationType type) {
+        NotificationConfig config = new() {
+                Message = title,
+                Description = description,
+                NotificationType = type
+            };
+
+        Notification.Open(config);
+    }
+
+    public void AlertGenericError(string title = "An error occurred.") {
+        ShowNotification(title, "Try refreshing this page to fix the issues.", NotificationType.Error);
+    }
+
+    public void ShowSuccessNotification(string title, string description = "")
+        => ShowNotification(title, description, NotificationType.Success);
+
+    public void ShowErrorNotification(string title, string description = "") 
+        => ShowNotification(title, description, NotificationType.Error);
 
 
 }

@@ -1,11 +1,60 @@
-﻿<Card>
-	<Tabs Type="TabType.Card">
-		<TabPane Key="1" Tab="">
+﻿@using System.ComponentModel.DataAnnotations
+@inherits BaseDbComponent<UserSettingsEditor>
 
-		</TabPane>
-	</Tabs>
-</Card>
+	@if(User is not null) {
+		<Tabs DefaultActiveKey="1" 
+			  Animated 
+			  TabPosition="TabPosition.Top">
+			<TabPane Key="1" 
+					 Tab="Info">
 
+				<Form Model="User"
+					  Context="user" 
+					  OnFinish="Submit"
+					  WrapperColSpan="16"
+					  LabelColOffset="1"
+					  Layout="Horizontal"
+					  LabelColSpan="4">
+
+						<FormItem Label="Full Name">
+							<Input @bind-Value="user.FullName" />
+						</FormItem>
+
+						<FormItem Label="Bio">
+							<TextArea @bind-Value="user.Bio" MaxLength="400" AutoSize/>
+						</FormItem>
+						
+					<FormItem>
+						<Button HtmlType="submit" Type="@ButtonType.Primary">
+							Submit
+						</Button>
+					</FormItem>
+
+				</Form>
+
+			</TabPane>
+			<TabPane Key="2" Tab="Other">
+			</TabPane>
+		</Tabs>
+	}
 @code {
+	public User? User { get; set; }
 
+	protected override async Task OnInitializedAsync() {
+		base.OnInitialized();
+		User = await GetCurrentUserAsync();
+	}
+
+
+	protected async Task<int> Submit() {
+		int result = await DbContext.SaveChangesAsync();
+
+		if(result > 0) {
+			ShowNotification("Saved!", "Changes have been applied successfully.", NotificationType.Success);
+		}else if(result < 0) {
+			AlertGenericError();
+		}
+
+		return result;
+	}
 }

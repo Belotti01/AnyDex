@@ -1,0 +1,20 @@
+﻿@inherits BaseDbComponent<ResourcesTable>
+
+<Table DataSource="Resources"
+	   Loading="IsLoading"
+	   PageSize=25
+Title="Resources">
+</Table>
+
+@code {
+	[Parameter]
+	public IEnumerable<Resource>? Resources { get; set; }
+	protected bool IsLoading { get; set; } = true;
+
+	protected override async Task OnInitializedAsync() {
+		await base.OnInitializedAsync();
+		// If no Resources are specified, load all of them.
+		Resources ??= DbContext.Resources ?? Enumerable.Empty<Resource>();
+		IsLoading = false;
+	}
+}

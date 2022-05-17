@@ -1,0 +1,53 @@
+﻿@inherits BaseDbComponent<ResourceEditor>
+
+<AuthorizeView>
+	<Authorized>
+		@if(Resource is not null) {
+			<Form Model="Resource"
+				  Layout="Horizontal"
+				  Context="resource"
+				  WrapperColSpan="16"
+				  LabelColSpan="8">
+				
+				<FormItem>
+					<Input @bind-Value="resource.Title" Size="big"/>
+				</FormItem>
+
+				<FormItem>
+					<Button Type="submit">Save</Button>
+				</FormItem>
+			</Form>
+		}
+	</Authorized>
+
+	<NotAuthorized>
+		<UnauthorizedView />
+	</NotAuthorized>
+
+</AuthorizeView>
+
+
+
+@code {
+	[Parameter]
+	public ulong ResourceId { get; set; } = 0;
+	protected Resource? Resource { get; set; }
+
+	protected override async Task OnInitializedAsync() {
+		await base.OnInitializedAsync();
+		// If a resource ID was specified, look for the tied resource
+		if(ResourceId != 0) {
+			Resource = DbContext.Resources.FirstOrDefault(x => x.Id == ResourceId);
+		}
+
+		if(Resource is null) {
+			// The resource was not found or no ID was specified
+			if(ResourceId != 0) {
+				// The specified resource does not exist
+				ShowErrorNotification("Resource does not exist", "The resource could not be found. Keep editing to create a new resource instead.");
+			}
+			Resource = new();
+			await DbContext.AddAsync(Resource);
+		}
+	}
+}

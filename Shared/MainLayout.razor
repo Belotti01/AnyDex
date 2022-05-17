@@ -1,34 +1,40 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @inherits LayoutComponentBase
 
-@inject SignInManager<User> SignInManager
-
-
 <Layout>
     <Header Class="header">
         <div class="logo" />
-        <Menu Theme="MenuTheme.Dark" Mode="MenuMode.Horizontal" DefaultSelectedKeys=@(new []{"1"})>
-            <MenuItem Key="1" RouterLink="/">Index</MenuItem>
-            <MenuItem Key="2" RouterLink="/counter">Counter</MenuItem>
-            <SubMenu Key="3" Title="Account" Placement="Placement.BottomCenter" >
-                <AuthorizeView> 
-                    <Authorized>
-                        <MenuItem Key="4" OnClick="Logout" Title="Logout"></MenuItem>
-                    </Authorized>
-                    <NotAuthorized>
-                        <MenuItem Key="4" RouterLink="/Identity/Account/Register" Title="Register"></MenuItem>
-                        <MenuItem Key="5" RouterLink="/Identity/Account/Login" Title="Login"></MenuItem>
-                    </NotAuthorized>
-                </AuthorizeView>
-            </SubMenu>
-        </Menu>
     </Header>
-    
-    <Layout Style=" padding: 0 24px 24px;">
-        <Content Class="site-layout-background" Style="padding: 24px; margin: 0; min-height: 100vh;">
-            @Body
-        </Content>
-        <Footer Style="text-align: center;">AnyDex ©2022</Footer>
+    <Layout>
+        <Sider Theme="SiderTheme.Dark">
+            <Menu Theme="MenuTheme.Dark" Mode="MenuMode.Vertical" DefaultSelectedKeys=@(new []{"10"})>
+                <MenuItem Key="10" RouterLink="/" RouterMatch="NavLinkMatch.All" Title="Index" />
+                
+                <MenuItem Key="20" RouterLink="/counter" RouterMatch="NavLinkMatch.All" Title="Counter" />
+
+                <MenuItem Key="30" RouterLink="/Resources" RouterMatch="NavLinkMatch.All" Title="Resources" />
+
+                <SubMenu Key="40" Title="Account" Placement="Placement.BottomCenter" >
+                    <AuthorizeView> 
+                        <Authorized>
+                            <MenuItem Key="41" RouterLink="/Identity/Account/Logout" RouterMatch="NavLinkMatch.All" Title="Logout" />
+                            <MenuItem Key="42" RouterLink="/User/Settings" RouterMatch="NavLinkMatch.All" Title="Settings" />
+                        </Authorized>
+                        <NotAuthorized>
+                            <MenuItem Key="41" RouterLink="/Identity/Account/Register" RouterMatch="NavLinkMatch.All" Title="Register" />
+                            <MenuItem Key="42" RouterLink="/Identity/Account/Login" RouterMatch="NavLinkMatch.All" Title="Login" />
+                        </NotAuthorized>
+                    </AuthorizeView>
+                </SubMenu>
+
+            </Menu>
+        </Sider>
+        <Layout Style=" padding: 0 24px 24px;">
+            <Content Class="site-layout-background" Style="padding: 24px; margin: 0; min-height: 100vh;">
+                @Body
+            </Content>
+            <Footer Style="text-align: center;">AnyDex ©2022</Footer>
+        </Layout>
     </Layout>
 
 </Layout>
@@ -53,10 +59,6 @@
 
     public void onCollapse(bool collapsed) {
         Console.WriteLine(collapsed);
-        this.collapsed =collapsed;
-    }
-
-    public async Task Logout() {
-        // Implement logout
+        this.collapsed = collapsed;
     }
 }

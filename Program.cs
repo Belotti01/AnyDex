@@ -15,6 +15,7 @@ namespace AnyDex {
 			builder = WebApplication.CreateBuilder(args);
 			AddServices(builder, connectionString);
 			ConfigureIdentity(builder);
+			ConfigureLogging(builder);
 
 			app = builder.Build();
 			ConfigureHttp(app);
@@ -32,7 +33,7 @@ namespace AnyDex {
 
 			if(Debugger.IsAttached) {
 				// Generate test data in the database
-				AnyDexDB.Testing.DummyGenerator.GenerateData();
+				//AnyDexDB.Testing.DummyGenerator.GenerateData();
 			}
 		}
 
@@ -41,10 +42,9 @@ namespace AnyDex {
 			builder.Services.AddRazorPages();
 			builder.Services.AddServerSideBlazor();
 			builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<User>>();
-			builder.Services.AddSingleton<WeatherForecastService>();        // <- To remove
 			builder.Services.AddAntDesign();
 			// Add support for ASP.NET MVC Localization
-			builder.Services.AddLocalization();
+			builder.Services.AddLocalization(x => x.ResourcesPath = "Resources");
 			// Suppress null-value warning for entity attributes with the [Required] data validation property
 			builder.Services.AddControllers(
 				options => options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true
@@ -53,6 +53,14 @@ namespace AnyDex {
 			builder.Services.AddDbContextFactory<AnyDexDb>(options => 
 				options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString))
 			);
+		}
+
+		private static void ConfigureLogging(WebApplicationBuilder builder) {
+			builder.Services.AddLogging(options => {
+				options.SetMinimumLevel(LogLevel.Trace);
+				options.AddConsole();
+				options.AddDebug();
+			});
 		}
 
 		/// <summary>
@@ -65,6 +73,7 @@ namespace AnyDex {
 				.AddDefaultUI()
 				.AddDefaultTokenProviders();
 
+			// Setup options for authentication & cookies
 			builder.Services.Configure<IdentityOptions>(options => {
 				// Password settings
 				options.Password.RequireDigit = false;
@@ -85,8 +94,7 @@ namespace AnyDex {
 				options.User.RequireUniqueEmail = true;
 			});
 
-			builder.Services.ConfigureApplicationCookie(options =>
-			{
+			builder.Services.ConfigureApplicationCookie(options => {
 				// Cookie settings
 				options.Cookie.HttpOnly = true;
 				options.ExpireTimeSpan = TimeSpan.FromMinutes(10);

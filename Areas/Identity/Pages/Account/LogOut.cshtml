@@ -1,11 +1,19 @@
-﻿@page
-@using Microsoft.AspNetCore.Identity
+﻿@page "/Identity/Account/Logout"
 @attribute [IgnoreAntiforgeryToken]
 @inject SignInManager<User> SignInManager
 
+@if (SignInManager.IsSignedIn(User)) {
+    <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="/" method="post">
+        <button onload="Run" type="submit" class="nav-link btn btn-link text-dark">Logout</button>
+    </form>
+}else {
+    <p>You are not logged in</p>
+}
+
+
 @functions {
-    public async Task<IActionResult> OnPost()
-    {
+    public async Task<IActionResult> OnPostAsync() {
+        
         if (SignInManager.IsSignedIn(User)) {
             await SignInManager.SignOutAsync();
         }

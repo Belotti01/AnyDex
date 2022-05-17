@@ -1,0 +1,15 @@
+﻿@inherits BaseDbComponent<UserSettings>
+@page "/User/Settings"
+
+<AuthorizeView>
+	<Authorized>
+		<UserSettingsEditor/>
+	</Authorized>
+	<NotAuthorized>
+
+	</NotAuthorized>
+</AuthorizeView>
+
+@code {
+	
+}
