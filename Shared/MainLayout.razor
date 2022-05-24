@@ -1,64 +1,62 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @inherits LayoutComponentBase
 
-<Layout>
-    <Header Class="header">
-        <div class="logo" />
-    </Header>
-    <Layout>
-        <Sider Theme="SiderTheme.Dark">
-            <Menu Theme="MenuTheme.Dark" Mode="MenuMode.Vertical" DefaultSelectedKeys=@(new []{"10"})>
-                <MenuItem Key="10" RouterLink="/" RouterMatch="NavLinkMatch.All" Title="Index" />
-                
-                <MenuItem Key="20" RouterLink="/counter" RouterMatch="NavLinkMatch.All" Title="Counter" />
+<!-- Service Providers: Hidden components that allow their usage over any page -->
+<MudThemeProvider @ref="ThemeProvider" Theme="Theme" @bind-IsDarkMode="IsDarkModeEnabled" />
+<MudDialogProvider/>
+<MudSnackbarProvider/>
 
-                <MenuItem Key="30" RouterLink="/Resources" RouterMatch="NavLinkMatch.All" Title="Resources" />
+<!-- Page Layout -->
+<MudLayout>
+    <!-- Top Menu -->
+    <MudAppBar Elevation="1">
+        <!-- Left Side -->
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+        <MudText Typo="Typo.h5" Class="ml-3">Application</MudText>
+        <MudSpacer />
+        <!-- Right Side -->
+        <MudIconButton Href="https://github.com/Belotti01/AnyDex" Target="_blank" Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" />
+        <MudToggleIconButton @bind-Toggled="IsDarkModeEnabled" ToggledIcon="@Icons.Material.Filled.DarkMode" Icon="@Icons.Material.Filled.LightMode" Color="Color.Inherit" Edge="Edge.End" />
+    </MudAppBar>
 
-                <SubMenu Key="40" Title="Account" Placement="Placement.BottomCenter" >
-                    <AuthorizeView> 
-                        <Authorized>
-                            <MenuItem Key="41" RouterLink="/Identity/Account/Logout" RouterMatch="NavLinkMatch.All" Title="Logout" />
-                            <MenuItem Key="42" RouterLink="/User/Settings" RouterMatch="NavLinkMatch.All" Title="Settings" />
-                        </Authorized>
-                        <NotAuthorized>
-                            <MenuItem Key="41" RouterLink="/Identity/Account/Register" RouterMatch="NavLinkMatch.All" Title="Register" />
-                            <MenuItem Key="42" RouterLink="/Identity/Account/Login" RouterMatch="NavLinkMatch.All" Title="Login" />
-                        </NotAuthorized>
-                    </AuthorizeView>
-                </SubMenu>
+    <!-- Side Menu -->
+    <MudDrawer @bind-Open="IsDrawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
+        <NavBarMenu />
+    </MudDrawer>
 
-            </Menu>
-        </Sider>
-        <Layout Style=" padding: 0 24px 24px;">
-            <Content Class="site-layout-background" Style="padding: 24px; margin: 0; min-height: 100vh;">
-                @Body
-            </Content>
-            <Footer Style="text-align: center;">AnyDex ©2022</Footer>
-        </Layout>
-    </Layout>
-
-</Layout>
-
-<style>
-    .logo {
-        width: 120px;
-        height: 31px;
-        background: rgba(255, 255, 255, 0.2);
-        margin: 16px 28px 16px 0;
-        float: left;
-    }
-
-    .site-layout-background {
-        background: #fff;
-    }
-</style>
-
-
+    <!-- Page Content -->
+    <MudMainContent>
+        @Body
+        <!-- "Scroll to Top" Button -->
+        <MudScrollToTop>
+            <MudFab Color="Color.Default" 
+                    Icon="@Icons.Filled.ArrowCircleUp" 
+                    IconColor="Color.Info"  
+                    IconSize="Size.Large"/>
+        </MudScrollToTop>
+    </MudMainContent>
+</MudLayout>
 @code {
-    bool collapsed;
+    [NotNull]
+    private MudThemeProvider? ThemeProvider { get; set; }
+    private MudTheme Theme { get; set; } = new();
+    // Default to TRUE to avoid throwing a flashbang to dark-mode user
+    private bool IsDarkModeEnabled { get; set; } = true;
+    private bool IsDrawerOpen { get; set; } = true;
 
-    public void onCollapse(bool collapsed) {
-        Console.WriteLine(collapsed);
-        this.collapsed = collapsed;
+    protected override async Task OnAfterRenderAsync(bool firstRender) {
+        if(firstRender) {
+            bool systemPreference = await ThemeProvider.GetSystemPreference();
+            // Skip re-rendering if nothing actually changes
+            if(IsDarkModeEnabled != systemPreference) {
+                IsDarkModeEnabled = systemPreference;
+                StateHasChanged();
+            }
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    void DrawerToggle() {
+        IsDrawerOpen = !IsDrawerOpen;
     }
 }

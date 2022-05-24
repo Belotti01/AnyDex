@@ -1,20 +1,35 @@
 ﻿@inherits BaseDbComponent<ResourcesTable>
 
-<Table DataSource="Resources"
-	   Loading="IsLoading"
-	   PageSize=25
-Title="Resources">
-</Table>
+<MudCard>
+	<MudCardContent Class="m-5">
+		<MudTable	Items="Resources"
+					Context="resource"
+					RowsPerPage="25"
+					Loading=@(Resources is null)
+					Striped
+					Hover>
+			 <HeaderContent>
+				<MudTh>Title</MudTh>
+				<MudTh>Description</MudTh>
+				<MudTh>Summary</MudTh>
+			</HeaderContent>
+			<RowTemplate>
+				<MudTd DataLabel="Title">@resource.Title</MudTd>
+				<MudTd DataLabel="Description">@resource.Description</MudTd>
+				<MudTd DataLabel="Summary">@resource.Summary</MudTd>
+			</RowTemplate>
+		</MudTable>
+
+	</MudCardContent>
+</MudCard>
 
 @code {
 	[Parameter]
 	public IEnumerable<Resource>? Resources { get; set; }
-	protected bool IsLoading { get; set; } = true;
 
 	protected override async Task OnInitializedAsync() {
 		await base.OnInitializedAsync();
 		// If no Resources are specified, load all of them.
-		Resources ??= DbContext.Resources ?? Enumerable.Empty<Resource>();
-		IsLoading = false;
+		Resources ??= DbContext.Resources;
 	}
 }

@@ -1,28 +1,38 @@
 using AnyDex.Areas.Identity;
-using AnyDex.Data;
-using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using MudBlazor.Services;
 using System.Diagnostics;
 
 namespace AnyDex {
 	public static class Program {
+
+		private static ILogger? Logger { get; set; }
+
 		public static void Main(string[] args) {
+			Logger = new LoggerFactory().CreateLogger(typeof(Program));
+
 			WebApplication app;
 			WebApplicationBuilder builder;
 			string connectionString = "user id=root;host=localhost;database=anydex;password=root";
 
+			Logger.LogInformation("Creating WebApplication Builder");
 			builder = WebApplication.CreateBuilder(args);
+			Logger.LogInformation("Configuring WebApplication Services");
 			AddServices(builder, connectionString);
 			ConfigureIdentity(builder);
 			ConfigureLogging(builder);
 
+			Logger.LogInformation("Building WebApplication");
 			app = builder.Build();
+			Logger.LogInformation("Configuring WebApplication");
 			ConfigureHttp(app);
 			ConfigureEndpoints(app);
 
+			Logger.LogInformation("Initializing Database data");
 			InitializeDatabase();
 
+			Logger.LogInformation("Starting Application");
 			app.Run();
 		}
 
@@ -33,7 +43,7 @@ namespace AnyDex {
 
 			if(Debugger.IsAttached) {
 				// Generate test data in the database
-				//AnyDexDB.Testing.DummyGenerator.GenerateData();
+				AnyDexDB.Testing.DummyGenerator.GenerateData();
 			}
 		}
 
@@ -42,7 +52,7 @@ namespace AnyDex {
 			builder.Services.AddRazorPages();
 			builder.Services.AddServerSideBlazor();
 			builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<User>>();
-			builder.Services.AddAntDesign();
+			builder.Services.AddMudServices();
 			// Add support for ASP.NET MVC Localization
 			builder.Services.AddLocalization(x => x.ResourcesPath = "Resources");
 			// Suppress null-value warning for entity attributes with the [Required] data validation property

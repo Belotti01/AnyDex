@@ -1,0 +1,22 @@
+﻿<MudNavMenu>
+    <MudNavLink Href="/" Match="NavLinkMatch.All">Dashboard</MudNavLink>
+    <MudNavLink Href="/Resources" Match="NavLinkMatch.All">Resources</MudNavLink>
+
+    <MudNavGroup Title="Settings">
+        <AuthorizeView>
+            <Authorized>
+                <MudNavLink Href="/User/Settings"  Match="NavLinkMatch.All">Settigs</MudNavLink>
+                <MudNavLink Href="/Identity/Account/Logout"  Match="NavLinkMatch.All">Logout</MudNavLink>
+            </Authorized>
+            <NotAuthorized>
+                <MudNavLink Href="/Identity/Account/Login"  Match="NavLinkMatch.All">Login</MudNavLink>
+                <MudNavLink Href="/Identity/Account/Register"  Match="NavLinkMatch.All">Register</MudNavLink>
+            </NotAuthorized>
+        </AuthorizeView>
+    </MudNavGroup>
+
+</MudNavMenu>
+
+@code {
+
+}

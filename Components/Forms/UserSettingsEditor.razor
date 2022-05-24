@@ -1,42 +1,19 @@
 ﻿@using System.ComponentModel.DataAnnotations
 @inherits BaseDbComponent<UserSettingsEditor>
 
-	@if(User is not null) {
-		<Tabs DefaultActiveKey="1" 
-			  Animated 
-			  TabPosition="TabPosition.Top">
-			<TabPane Key="1" 
-					 Tab="Info">
+@if(User is not null) {
+	<MudTabs>
+		<MudTabPanel Text="Main">
+			<MudCard>
+				<MudForm Class="mx-5" Model="User">
+					<MudTextField Label="Full Name" @bind-Value="User.FullName" />
+					<MudTextField Label="Bio" @bind-Value="User.Bio" Lines="32" />
+				</MudForm>
+			</MudCard>
+		</MudTabPanel>
+	</MudTabs>
+}
 
-				<Form Model="User"
-					  Context="user" 
-					  OnFinish="Submit"
-					  WrapperColSpan="16"
-					  LabelColOffset="1"
-					  Layout="Horizontal"
-					  LabelColSpan="4">
-
-						<FormItem Label="Full Name">
-							<Input @bind-Value="user.FullName" />
-						</FormItem>
-
-						<FormItem Label="Bio">
-							<TextArea @bind-Value="user.Bio" MaxLength="400" AutoSize/>
-						</FormItem>
-						
-					<FormItem>
-						<Button HtmlType="submit" Type="@ButtonType.Primary">
-							Submit
-						</Button>
-					</FormItem>
-
-				</Form>
-
-			</TabPane>
-			<TabPane Key="2" Tab="Other">
-			</TabPane>
-		</Tabs>
-	}
 @code {
 	public User? User { get; set; }
 
@@ -50,9 +27,9 @@
 		int result = await DbContext.SaveChangesAsync();
 
 		if(result > 0) {
-			ShowNotification("Saved!", "Changes have been applied successfully.", NotificationType.Success);
+			//ShowNotification("Saved!", "Changes have been applied successfully.", NotificationType.Success);
 		}else if(result < 0) {
-			AlertGenericError();
+			//AlertGenericError();
 		}
 
 		return result;

@@ -1,5 +1,6 @@
-﻿@typeparam TSelf
-@inherits Component
+﻿@using System.Diagnostics
+@typeparam TSelf
+@inherits MudComponentBase
 
 @code {
     [CascadingParameter, NotNull]
@@ -7,8 +8,6 @@
     [Inject, NotNull]
     public SignInManager<User>? SignInManager { get; set; }
     public UserManager<User> UserManager => SignInManager.UserManager;
-    [Inject, NotNull]
-    public NotificationService? Notification { get; set; }
 
     /// <summary>
     /// Logs' output stream accessor object for components.
@@ -16,30 +15,43 @@
     [Inject, NotNull]
     protected ILogger<TSelf>? Logger { get; private set; }
 
+    protected override void OnInitialized() {
+        base.OnInitialized();
+
+        TryValidateInitializationValues();
+    }
+
     public string Localize(string text) {
         // Unimplemented for now
         return text;
     }
 
-    public void ShowNotification(string title, string description, NotificationType type) {
-        NotificationConfig config = new() {
-                Message = title,
-                Description = description,
-                NotificationType = type
-            };
+    public virtual bool TryValidateInitializationValues() {
+        bool isCurrentFieldInvalid;
+        bool isAnyFieldInvalid = false;
 
-        Notification.Open(config);
+        // Check Logger first, as other errors can't be signaled if it's not set
+        if(Logger is null) {
+            if(Debugger.IsAttached) {
+                throw new NullReferenceException($"Logging can't be computed due to field '{nameof(Logger)}' of type '{typeof(ILogger).Name}' having no value.");
+            }else {
+                return false;
+            }
+        }
+
+        if(isCurrentFieldInvalid = AuthenticationStateTask is null)
+            LogNullRequiredField(nameof(AuthenticationStateTask));
+        isAnyFieldInvalid &= isCurrentFieldInvalid;
+
+        if(isCurrentFieldInvalid = SignInManager is null)
+            LogNullRequiredField(nameof(SignInManager));
+        isAnyFieldInvalid &= isCurrentFieldInvalid;
+
+        return isAnyFieldInvalid;
     }
 
-    public void AlertGenericError(string title = "An error occurred.") {
-        ShowNotification(title, "Try refreshing this page to fix the issues.", NotificationType.Error);
+    protected void LogNullRequiredField(string fieldName) {
+        Logger.LogCritical("Required Base Component field '{fieldName}' has no set value.", fieldName);
     }
-
-    public void ShowSuccessNotification(string title, string description = "")
-        => ShowNotification(title, description, NotificationType.Success);
-
-    public void ShowErrorNotification(string title, string description = "") 
-        => ShowNotification(title, description, NotificationType.Error);
-
 
 }

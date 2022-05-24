@@ -2,22 +2,7 @@
 
 <AuthorizeView>
 	<Authorized>
-		@if(Resource is not null) {
-			<Form Model="Resource"
-				  Layout="Horizontal"
-				  Context="resource"
-				  WrapperColSpan="16"
-				  LabelColSpan="8">
-				
-				<FormItem>
-					<Input @bind-Value="resource.Title" Size="big"/>
-				</FormItem>
 
-				<FormItem>
-					<Button Type="submit">Save</Button>
-				</FormItem>
-			</Form>
-		}
 	</Authorized>
 
 	<NotAuthorized>
@@ -44,7 +29,7 @@
 			// The resource was not found or no ID was specified
 			if(ResourceId != 0) {
 				// The specified resource does not exist
-				ShowErrorNotification("Resource does not exist", "The resource could not be found. Keep editing to create a new resource instead.");
+				// ShowErrorNotification("Resource does not exist", "The resource could not be found. Keep editing to create a new resource instead.");
 			}
 			Resource = new();
 			await DbContext.AddAsync(Resource);
