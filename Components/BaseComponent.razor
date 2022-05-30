@@ -2,18 +2,31 @@
 @typeparam TSelf
 @inherits MudComponentBase
 
+<!-- Injected Services -->
+@inject SignInManager<User> SignInManager
+@inject DateTimeLocalizer ClientDateTime
+@inject DialogService DialogService
+
 @code {
+    // Cascading Parameters inherithed from the layout
+    [CascadingParameter, NotNull]
+    public MudDialogProvider? DialogProvider { get; set; }
+    [CascadingParameter, NotNull]
+    public MudThemeProvider? ThemeProvider { get; set; }
     [CascadingParameter, NotNull]
     public Task<AuthenticationState>? AuthenticationStateTask { get; set; }
-    [Inject, NotNull]
-    public SignInManager<User>? SignInManager { get; set; }
+
+    /// <inheritdoc cref="SignInManager{TUser}.UserManager"/>
     public UserManager<User> UserManager => SignInManager.UserManager;
 
     /// <summary>
     /// Logs' output stream accessor object for components.
     /// </summary>
     [Inject, NotNull]
-    protected ILogger<TSelf>? Logger { get; private set; }
+    public ILogger<TSelf>? Logger { get; private set; }
+
+    [Inject, NotNull]
+    public ISnackbar? Snackbar { get; private set; }
 
     protected override void OnInitialized() {
         base.OnInitialized();
@@ -23,6 +36,7 @@
 
     public string Localize(string text) {
         // Unimplemented for now
+        // Might be unneeded, depends on how MudBlazor handles Localization
         return text;
     }
 
@@ -34,9 +48,8 @@
         if(Logger is null) {
             if(Debugger.IsAttached) {
                 throw new NullReferenceException($"Logging can't be computed due to field '{nameof(Logger)}' of type '{typeof(ILogger).Name}' having no value.");
-            }else {
-                return false;
             }
+            return false;
         }
 
         if(isCurrentFieldInvalid = AuthenticationStateTask is null)
@@ -45,6 +58,14 @@
 
         if(isCurrentFieldInvalid = SignInManager is null)
             LogNullRequiredField(nameof(SignInManager));
+        isAnyFieldInvalid &= isCurrentFieldInvalid;
+        
+        if(isCurrentFieldInvalid = Snackbar is null)
+            LogNullRequiredField(nameof(Snackbar));
+        isAnyFieldInvalid &= isCurrentFieldInvalid;
+
+        if(isCurrentFieldInvalid = DialogService is null)
+            LogNullRequiredField(nameof(DialogService));
         isAnyFieldInvalid &= isCurrentFieldInvalid;
 
         return isAnyFieldInvalid;

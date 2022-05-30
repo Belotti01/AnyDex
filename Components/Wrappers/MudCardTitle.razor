@@ -1,0 +1,19 @@
+﻿<MudCardHeader>
+	<CardHeaderContent>
+		<MudText Class="@Class" 
+				 Typo="Typo.h6" 
+				 Align="Align" 
+				 GutterBottom="false">
+				 @ChildContent
+		</MudText>
+	</CardHeaderContent>
+</MudCardHeader>
+
+@code {
+	[Parameter]
+	public RenderFragment? ChildContent { get; set; }
+	[Parameter]
+	public Align Align { get; set; } = Align.Left;
+	[Parameter]
+	public string Class { get; set; } = "my-1";
+}

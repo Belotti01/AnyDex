@@ -1,6 +1,6 @@
 using AnyDex.Areas.Identity;
+using AnyDex.Data;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using MudBlazor.Services;
 using System.Diagnostics;
 
@@ -9,7 +9,7 @@ namespace AnyDex {
 
 		private static ILogger? Logger { get; set; }
 
-		public static void Main(string[] args) {
+		public static async Task Main(string[] args) {
 			Logger = new LoggerFactory().CreateLogger(typeof(Program));
 
 			WebApplication app;
@@ -30,20 +30,21 @@ namespace AnyDex {
 			ConfigureEndpoints(app);
 
 			Logger.LogInformation("Initializing Database data");
-			InitializeDatabase();
+			await InitializeDatabaseAsync();
 
 			Logger.LogInformation("Starting Application");
 			app.Run();
 		}
 
-		private static void InitializeDatabase() {
+		private static async Task InitializeDatabaseAsync() {
 			using AnyDexDb db = new();
 			// Create or update database if needed
-			db.Database.Migrate();
+			await db.Database.MigrateAsync();
 
 			if(Debugger.IsAttached) {
 				// Generate test data in the database
-				AnyDexDB.Testing.DummyGenerator.GenerateData();
+				bool createUsers = !db.Users.Any();
+				AnyDexDB.Testing.DummyGenerator.GenerateData(createUsers);
 			}
 		}
 
@@ -52,7 +53,19 @@ namespace AnyDex {
 			builder.Services.AddRazorPages();
 			builder.Services.AddServerSideBlazor();
 			builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<User>>();
-			builder.Services.AddMudServices();
+			builder.Services.AddMudServices(config => {
+				config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.TopRight;
+
+				config.SnackbarConfiguration.PreventDuplicates = false;
+				config.SnackbarConfiguration.NewestOnTop = false;
+				config.SnackbarConfiguration.ShowCloseIcon = true;
+				config.SnackbarConfiguration.VisibleStateDuration = 10000;
+				config.SnackbarConfiguration.HideTransitionDuration = 500;
+				config.SnackbarConfiguration.ShowTransitionDuration = 500;
+				config.SnackbarConfiguration.SnackbarVariant = Variant.Filled;
+				config.SnackbarConfiguration.ClearAfterNavigation = true;
+				config.SnackbarConfiguration.MaxDisplayedSnackbars = 4;
+			});
 			// Add support for ASP.NET MVC Localization
 			builder.Services.AddLocalization(x => x.ResourcesPath = "Resources");
 			// Suppress null-value warning for entity attributes with the [Required] data validation property
@@ -63,11 +76,14 @@ namespace AnyDex {
 			builder.Services.AddDbContextFactory<AnyDexDb>(options => 
 				options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString))
 			);
+			// Inject DateTime Client Time Zone converter
+			builder.Services.AddScoped<DateTimeLocalizer>();
+
+			builder.Services.AddScoped<DialogService>();
 		}
 
 		private static void ConfigureLogging(WebApplicationBuilder builder) {
 			builder.Services.AddLogging(options => {
-				options.SetMinimumLevel(LogLevel.Trace);
 				options.AddConsole();
 				options.AddDebug();
 			});

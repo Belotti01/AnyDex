@@ -12,3 +12,4 @@ global using AnyDexDB;
 global using AnyDexDB.Tables;
 global using AnyDex.Components.Auth;
 global using AnyDex.Components.Forms;
+global using AnyDex.Shared.Extensions;

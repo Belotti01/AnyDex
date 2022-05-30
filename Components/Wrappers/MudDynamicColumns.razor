@@ -1,0 +1,18 @@
+﻿@using System.ComponentModel.DataAnnotations
+<MudGrid Justify="Justify.SpaceEvenly" Spacing="2">
+	<MudItem xxl="4" xl="5" lg="5" md="md" sm="9" xs="11">
+		@LeftColumn
+	</MudItem>
+	<MudItem xxl="4" xl="5" lg="5" md="md" sm="9" xs="11">
+		@RightColumn
+	</MudItem>
+</MudGrid>
+
+@code {
+	[Parameter, Required]
+	public RenderFragment? LeftColumn { get; set; }
+	[Parameter, Required]
+	public RenderFragment? RightColumn { get; set; }
+	[Parameter]
+	public int md { get; set; } = 6;
+}
