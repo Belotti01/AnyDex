@@ -2,19 +2,67 @@
 @inherits BaseDbComponent<UserSettingsEditor>
 
 @if(User is not null) {
-	<MudTabs>
-		<MudTabPanel Text="Main">
-			<MudCard>
-				<MudForm Class="mx-5" Model="User">
-					<MudTextField Label="Full Name" @bind-Value="User.FullName" />
-					<MudTextField Label="Bio" @bind-Value="User.Bio" Lines="32" />
-				</MudForm>
-			</MudCard>
+	<MudTabs >
+			<!-- PROFILE -->
+		<MudTabPanel Text="Profile">
+			<EditForm Class="pa-4" Model="User" OnValidSubmit="SubmitProfile" OnInvalidSubmit="OnInvalidSubmit">
+				<DataAnnotationsValidator />
+				<MudCard>
+					<MudCardContent>
+						<MudDynamicColumns>
+							<LeftColumn>
+								<MudPaper Elevation=1 Outlined Class="d-block p-4 w-75 mx-auto" >
+										<MudImage Class="d-block mx-auto" 
+												  Src="@(string.IsNullOrEmpty(User.ProfilePicture) 
+															? PLACEHOLDER_PROFILE_PICTURE 
+															: User.ProfilePicture)" 
+												  Elevation="2"
+												  Fluid
+												  Width="180" />
+										<MudTextField Label="URL:" 
+													  @bind-Value="User.ProfilePicture" 
+													  Clearable 
+													  For="() => User.ProfilePicture"/>
+								</MudPaper>
+								<MudTextField ReadOnly 
+											  Label="Username" 
+											  @bind-Value="User.UserName" 
+											  For="() => User.UserName" />
+								<MudTextField Label="Full Name" 
+											  @bind-Value="User.FullName" 
+											  For="() => User.FullName" />
+							</LeftColumn>
+							
+							<RightColumn>
+								<MudTextField Label="Bio" 
+												@bind-Value="User.Bio" 
+												Lines="16" 
+												Variant="Variant.Outlined" 
+												For="() => User.Bio" 
+												MaxLength="1000"
+												Counter="1000" 
+												Immediate/>
+							</RightColumn>
+						</MudDynamicColumns>
+					</MudCardContent>
+					<MudCardActions>
+						<MudButton Class="d-block mx-auto" ButtonType="ButtonType.Submit">Save Changes</MudButton>
+					</MudCardActions>
+				</MudCard>
+			</EditForm>
+		</MudTabPanel>
+			
+		<!-- ACCOUNT -->
+		<MudTabPanel Text="Account">
+			<UserPasswordEditor />
 		</MudTabPanel>
 	</MudTabs>
 }
 
 @code {
+	private const string PLACEHOLDER_PROFILE_PICTURE = "https://www.datacomplianceeurope.eu/wp-content/uploads/2016/12/logo-placeholder.png";
+
+	[NotNull]
 	public User? User { get; set; }
 
 	protected override async Task OnInitializedAsync() {
@@ -22,16 +70,29 @@
 		User = await GetCurrentUserAsync();
 	}
 
+	protected void OnInvalidSubmit(EditContext context) {
+		// Input errors should be displayed in the form - this is just for debugging
+		#if DEBUG
+	Snackbar.AddWarning("Fix errors and retry.");
+	Logger.LogDebug($"InvalidSubmit event called on page {nameof(UserSettingsEditor)}");
+		#endif
+	}
 
-	protected async Task<int> Submit() {
+	protected async Task<int> SubmitProfile(EditContext context) {
+		DbContext.Entry(User).DetectChanges();
 		int result = await DbContext.SaveChangesAsync();
 
 		if(result > 0) {
-			//ShowNotification("Saved!", "Changes have been applied successfully.", NotificationType.Success);
+			Snackbar.AddSuccess("Profile has been changed.");
 		}else if(result < 0) {
-			//AlertGenericError();
+			Snackbar.AddError("Changes could not be applied. Please try again later.");
 		}
+		// If result is 0, no changes were made
 
 		return result;
+	}
+
+	protected void UpdateProfilePicture() {
+		base.StateHasChanged();
 	}
 }

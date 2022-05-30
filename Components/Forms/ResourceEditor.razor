@@ -2,7 +2,18 @@
 
 <AuthorizeView>
 	<Authorized>
-
+		<MudCard>
+			@if(Resource is null) {
+				<MudProgressLinear Indeterminate/>
+			}else {
+				<MudCardContent>
+					<MudForm Model="Resource">
+						<MudContainer MaxWidth="MaxWidth.Medium">
+						</MudContainer>
+					</MudForm>
+				</MudCardContent>
+			}
+		</MudCard>
 	</Authorized>
 
 	<NotAuthorized>

@@ -3,8 +3,8 @@
 
 <!-- Service Providers: Hidden components that allow their usage over any page -->
 <MudThemeProvider @ref="ThemeProvider" Theme="Theme" @bind-IsDarkMode="IsDarkModeEnabled" />
-<MudDialogProvider/>
-<MudSnackbarProvider/>
+<MudDialogProvider @ref="DialogProvider" />
+<MudSnackbarProvider />
 
 <!-- Page Layout -->
 <MudLayout>
@@ -39,6 +39,8 @@
 @code {
     [NotNull]
     private MudThemeProvider? ThemeProvider { get; set; }
+    [NotNull]
+    private MudDialogProvider? DialogProvider { get; set; }
     private MudTheme Theme { get; set; } = new();
     // Default to TRUE to avoid throwing a flashbang to dark-mode user
     private bool IsDarkModeEnabled { get; set; } = true;
@@ -54,6 +56,10 @@
             }
         }
         await base.OnAfterRenderAsync(firstRender);
+    }
+
+    protected async Task ShowLoginDialog() {
+        
     }
 
     void DrawerToggle() {

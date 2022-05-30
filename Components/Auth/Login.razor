@@ -1,0 +1,34 @@
+﻿@inherits BaseComponent<Login>
+
+<AuthorizeView>
+	<Authorized>
+		<MudText Align="Align.Center" Typo="Typo.h2">
+			You are already logged in.
+		</MudText>
+	</Authorized>
+	
+	<NotAuthorized>
+		<MudGrid Justify="Justify.Center" Spacing="3">
+			<MudItem xs="11" sm="9" md="7" xxl="5">
+				<MudTextField	@bind-Value="User" 
+								Label="Email or Username" 
+								Required 
+								Clearable />
+			</MudItem>
+			<MudItem xs="11" sm="9" md="7" xxl="5">
+			<MudTextField	@bind-Value="Password" 
+							Label="Password" 
+							Required 
+							Clearable 
+							InputType="InputType.Password" />
+			</MudItem>
+		</MudGrid>
+	</NotAuthorized>
+</AuthorizeView>
+
+@code {
+	protected string User { get; set; } = "";
+	protected string Password { get; set; } = "";
+
+
+}
