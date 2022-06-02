@@ -65,9 +65,9 @@
 	[NotNull]
 	public User? User { get; set; }
 
-	protected override async Task OnInitializedAsync() {
+	protected override void OnInitialized() {
 		base.OnInitialized();
-		User = await GetCurrentUserAsync();
+		User = CurrentUser;
 	}
 
 	protected void OnInvalidSubmit(EditContext context) {

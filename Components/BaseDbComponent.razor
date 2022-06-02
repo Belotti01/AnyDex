@@ -8,20 +8,28 @@
 	[Inject, NotNull]
 	protected AnyDexDb? DbContext { get; private set; }
 
-	public async Task<User?> GetCurrentUserAsync() {
-		User user;
+	public User? CurrentUser { get; private set; }
+
+
+	protected override async Task OnInitializedAsync() {
+		await base.OnInitializedAsync();
+		// Eager-load the currently logged-in user
+		CurrentUser = await GetCurrentUserAsync();
+	}
+
+	/// <summary> Lazy-load the <see cref="CurrentUser"/>, or retrieve it if it's already cached. </summary>
+	private async Task<User?> GetCurrentUserAsync() {
 		var auth = await AuthenticationStateTask;
 
 		if(auth.User.Identity is null) {
 			return null;
 		}
 
-		user = await UserManager.GetUserAsync(auth.User);
+		User? user = await UserManager.GetUserAsync(auth.User);
 #if DEBUG
-	string username = user?.UserName ?? "<Guest>";
-	Logger.LogDebug("Current User: {username}", username);
+		string username = user?.UserName ?? "<Guest>";
+		Logger.LogDebug("Current User: {username}", username);
 #endif
-
 		return user;
 	}
 

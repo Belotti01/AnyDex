@@ -11,7 +11,13 @@
 								Loading=@(Resources is null)
 								Striped
 								Hover>
-						 <HeaderContent>
+						<HeaderContent>
+							<AuthorizeView>
+								<Authorized>
+									<MudTh>Bookmark</MudTh>
+								</Authorized>
+							</AuthorizeView>
+
 							<MudTh>Title</MudTh>
 							<MudTh>Description</MudTh>
 							<MudTh>Summary</MudTh>
@@ -20,6 +26,15 @@
 							<MudTh>Material</MudTh>
 						</HeaderContent>
 						<RowTemplate>
+							<AuthorizeView>
+								<Authorized>
+									<MudTd>
+										<MudIconButton Icon="@GetBookmarkIcon(resource)"
+													   OnClick="() => ToggleBookmark(resource)" />
+									</MudTd>
+								</Authorized>
+							</AuthorizeView>
+
 							<MudTd DataLabel="Title">@resource.Title</MudTd>
 							<MudTd DataLabel="Description">@resource.Description</MudTd>
 							<MudTd DataLabel="Summary">@resource.Summary</MudTd>
@@ -76,23 +91,88 @@
 	public IEnumerable<Resource>? Resources { get; set; }
 	public IEnumerable<Material>? Material { get; set; }
 
+
 	public string? CurrentResourceTitle { get; protected set; }
+	protected SortedSet<ulong>? _bookmarkedResourceIds;
 	protected int _currentTabIndex = 0;
 	protected ulong _currentMaterialResourceId = 0;
+	[NotNull]
+	protected BookmarkManager? _bookmarkManager;
 
 	protected override async Task OnInitializedAsync() {
 		await base.OnInitializedAsync();
 		// If no Resources are specified, load all of them.
+		_bookmarkManager = new(DbContext);
 		Resources ??= DbContext.Resources;
+		LoadBookmarkedResources();
 	}
 
 	protected void OpenMaterialTab(Resource resource) {
 		Material = null;
 		_currentTabIndex = 1;
+		// If the material list is already loaded, don't bother refreshing it
 		if(_currentMaterialResourceId != resource.Id) {
-			// Already loaded - don't refresh
 			CurrentResourceTitle = resource.Title;
 			Material = resource.Materials;
 		}
+	}
+
+	protected void ToggleBookmark(Resource resource) {
+		if(CurrentUser is null || _bookmarkedResourceIds is null) {
+			return;
+		}
+
+		bool hasStateChanged;
+		bool isBookmarked = _bookmarkedResourceIds.Contains(resource.Id);
+		if(isBookmarked) {
+			hasStateChanged = RemoveBookmark(resource);
+		}else {
+			hasStateChanged = AddBookmark(resource);
+		}
+
+		if(hasStateChanged) {
+			DbContext.SaveChanges();
+			StateHasChanged();
+		}
+	}
+
+	protected bool RemoveBookmark(Resource resource) {
+		bool removed = _bookmarkManager.TryRemove(CurrentUser!.Id, resource.Id);
+
+		if(removed) {
+			Snackbar.AddSuccess($"Bookmark removed from \"{resource.Title}\"");
+			_bookmarkedResourceIds!.Remove(resource.Id);
+		}else {
+			Snackbar.AddWarning($"Bookmark could not be removed. Please try again later.");
+		}
+		return removed;
+	}
+
+	protected bool AddBookmark(Resource resource) {
+		bool added = _bookmarkManager.TryAdd(CurrentUser!.Id, resource.Id);
+
+		if(added) {
+			Snackbar.AddSuccess($"Bookmark added to \"{resource.Title}\"");
+			_bookmarkedResourceIds!.Add(resource.Id);
+		}else {
+			Snackbar.AddWarning($"Bookmark could not be added. Please try again later.");
+		}
+		return added;
+	}
+
+	protected void LoadBookmarkedResources() {
+		if(CurrentUser is null) {
+			return;
+		}
+		_bookmarkedResourceIds = new(CurrentUser
+			.Bookmarks
+			.Select(x => x.ResourceId));
+	}
+
+	protected string GetBookmarkIcon(Resource resource) {
+		return _bookmarkedResourceIds is not null
+			&& _bookmarkedResourceIds.Contains(resource.Id)
+				? Icons.Material.Filled.Bookmark
+				: Icons.Material.Outlined.BookmarkBorder;
 	}
 }
