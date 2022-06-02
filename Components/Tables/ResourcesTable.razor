@@ -92,7 +92,6 @@
 		if(_currentMaterialResourceId != resource.Id) {
 			// Already loaded - don't refresh
 			CurrentResourceTitle = resource.Title;
-			DbContext.Entry(resource).Collection<Material>(nameof(resource.Materials)).Load();
 			Material = resource.Materials;
 		}
 	}

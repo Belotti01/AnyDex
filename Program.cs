@@ -75,9 +75,10 @@ namespace AnyDex {
 				options => options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true
 			);
 			// Inject DbContextFactory
-			builder.Services.AddDbContextFactory<AnyDexDb>(options => 
-				options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString))
-			);
+			builder.Services.AddDbContextFactory<AnyDexDb>(options => {
+				options.UseLazyLoadingProxies(true);
+				options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+			});
 			// Inject DateTime Client Time Zone converter
 			builder.Services.AddScoped<DateTimeLocalizer>();
 		}
