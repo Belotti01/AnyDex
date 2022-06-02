@@ -3,9 +3,9 @@
 @inherits MudComponentBase
 
 <!-- Injected Services -->
-@inject SignInManager<User> SignInManager
-@inject DateTimeLocalizer ClientDateTime
-@inject DialogService DialogService
+@inject SignInManager<User> _signInManager
+@inject DateTimeLocalizer _clientDateTime
+@inject DialogService _dialogService
 
 @code {
     // Cascading Parameters inherithed from the layout
@@ -18,6 +18,9 @@
 
     /// <inheritdoc cref="SignInManager{TUser}.UserManager"/>
     public UserManager<User> UserManager => SignInManager.UserManager;
+    public SignInManager<User> SignInManager { get => _signInManager; }
+    public DateTimeLocalizer ClientDateTime { get => _clientDateTime; }
+    public DialogService DialogService { get => _dialogService; }
 
     /// <summary>
     /// Logs' output stream accessor object for components.

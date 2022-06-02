@@ -3,7 +3,8 @@
 		<MudText Class="@Class" 
 				 Typo="Typo.h6" 
 				 Align="Align" 
-				 GutterBottom="false">
+				 GutterBottom="false"
+				 Inline>
 				 @ChildContent
 		</MudText>
 	</CardHeaderContent>
@@ -16,4 +17,6 @@
 	public Align Align { get; set; } = Align.Left;
 	[Parameter]
 	public string Class { get; set; } = "my-1";
+	[Parameter]
+	public Typo Typo { get; set; } = Typo.h6;
 }

@@ -10,12 +10,13 @@
   "profiles": {
     "AnyDex": {
       "commandName": "Project",
-      "dotnetRunMessages": true,
+      "commandLineArgs": "-u:root -h:localhost -d:anydex -p:root",
       "launchBrowser": true,
-      "applicationUrl": "https://localhost:7228;http://localhost:5228",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
-      }
+      },
+      "applicationUrl": "https://localhost:7228;http://localhost:5228",
+      "dotnetRunMessages": true
     },
     "IIS Express": {
       "commandName": "IISExpress",

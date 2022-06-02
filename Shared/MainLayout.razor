@@ -3,7 +3,7 @@
 
 <!-- Service Providers: Hidden components that allow their usage over any page -->
 <MudThemeProvider @ref="ThemeProvider" Theme="Theme" @bind-IsDarkMode="IsDarkModeEnabled" />
-<MudDialogProvider @ref="DialogProvider" />
+<MudDialogProvider @ref="DialogProvider" CloseOnEscapeKey="true" />
 <MudSnackbarProvider />
 
 <!-- Page Layout -->
@@ -12,7 +12,7 @@
     <MudAppBar Elevation="1">
         <!-- Left Side -->
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
-        <MudText Typo="Typo.h5" Class="ml-3">Application</MudText>
+        <MudText Typo="Typo.h5" Class="ml-3">AnyDex Project</MudText>
         <MudSpacer />
         <!-- Right Side -->
         <MudIconButton Href="https://github.com/Belotti01/AnyDex" Target="_blank" Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" />
@@ -59,7 +59,7 @@
     }
 
     protected async Task ShowLoginDialog() {
-        
+        //TODO
     }
 
     void DrawerToggle() {

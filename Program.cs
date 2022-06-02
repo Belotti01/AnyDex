@@ -45,10 +45,12 @@ namespace AnyDex {
 				// Generate test data in the database
 				bool createUsers = !db.Users.Any();
 				AnyDexDB.Testing.DummyGenerator.GenerateData(createUsers);
+				AnyDexDB.Testing.DummyGenerator.LogData();
 			}
 		}
 
 		private static void AddServices(WebApplicationBuilder builder, string connectionString) {
+			builder.Services.AddScoped<DialogService>();
 			builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 			builder.Services.AddRazorPages();
 			builder.Services.AddServerSideBlazor();
@@ -78,8 +80,6 @@ namespace AnyDex {
 			);
 			// Inject DateTime Client Time Zone converter
 			builder.Services.AddScoped<DateTimeLocalizer>();
-
-			builder.Services.AddScoped<DialogService>();
 		}
 
 		private static void ConfigureLogging(WebApplicationBuilder builder) {

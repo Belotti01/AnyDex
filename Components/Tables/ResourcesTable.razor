@@ -1,35 +1,99 @@
 ﻿@inherits BaseDbComponent<ResourcesTable>
 
-<MudCard>
-	<MudCardContent Class="m-5">
-		<MudTable	Items="Resources"
-					Context="resource"
-					RowsPerPage="25"
-					Loading=@(Resources is null)
-					Striped
-					Hover>
-			 <HeaderContent>
-				<MudTh>Title</MudTh>
-				<MudTh>Description</MudTh>
-				<MudTh>Summary</MudTh>
-			</HeaderContent>
-			<RowTemplate>
-				<MudTd DataLabel="Title">@resource.Title</MudTd>
-				<MudTd DataLabel="Description">@resource.Description</MudTd>
-				<MudTd DataLabel="Summary">@resource.Summary</MudTd>
-			</RowTemplate>
-		</MudTable>
+<MudTabs Class="mx-5 mt-5" @bind-ActivePanelIndex="_currentTabIndex" KeepPanelsAlive>
 
-	</MudCardContent>
-</MudCard>
+		<MudTabPanel Text="Resources">
+			<MudCard>
+				<MudCardContent Class="m-5">
+					<MudTable	Items="Resources"
+								Context="resource"
+								RowsPerPage="25"
+								Loading=@(Resources is null)
+								Striped
+								Hover>
+						 <HeaderContent>
+							<MudTh>Title</MudTh>
+							<MudTh>Description</MudTh>
+							<MudTh>Summary</MudTh>
+							<MudTh>Creator</MudTh>
+							<MudTh>Release Date</MudTh>
+							<MudTh>Material</MudTh>
+						</HeaderContent>
+						<RowTemplate>
+							<MudTd DataLabel="Title">@resource.Title</MudTd>
+							<MudTd DataLabel="Description">@resource.Description</MudTd>
+							<MudTd DataLabel="Summary">@resource.Summary</MudTd>
+							<MudTd DataLabel="Creator">@resource.Creator</MudTd>
+							<MudTd DataLabel="Release Date">@resource.ReleaseDate.ToLongDateString()</MudTd>
+							<MudTd DataLabel="Material">
+								<MudIconButton Icon="@Icons.Material.Filled.KeyboardDoubleArrowRight" 
+											   OnClick="() => OpenMaterialTab(resource)" />
+							</MudTd>
+						</RowTemplate>
+					</MudTable>
+				</MudCardContent>
+			</MudCard>
+		</MudTabPanel>
+		
+
+		<MudTabPanel Text="Material" Disabled="Material is null">
+			<MudCard>
+				<MudCardHeader>
+					<CardHeaderContent>
+						<MudText Align="Align.Center" Typo="Typo.h3">
+							@CurrentResourceTitle
+						</MudText> 
+					</CardHeaderContent>
+				</MudCardHeader>
+				<MudCardContent Class="m-5">
+					<MudTable	Items="Material"
+								Context="material"
+								RowsPerPage="25"
+								Loading=@(Material is null)
+								Striped
+								Hover>
+						<HeaderContent>
+							<MudTh>Title</MudTh>
+							<MudTh>Description</MudTh>
+							<MudTh>Type</MudTh>
+							<MudTh>Length</MudTh>
+						</HeaderContent>
+						<RowTemplate>
+							<MudTd DataLabel="Title">@material.Title</MudTd>
+							<MudTd DataLabel="Description">@material.Description</MudTd>
+							<MudTd DataLabel="Type">@material.Type.ToText()</MudTd>
+							<MudTd DataLabel="Length">@material.Length</MudTd>
+						</RowTemplate>
+					</MudTable>
+				</MudCardContent>
+			</MudCard>
+		</MudTabPanel>
+
+</MudTabs>
 
 @code {
 	[Parameter]
 	public IEnumerable<Resource>? Resources { get; set; }
+	public IEnumerable<Material>? Material { get; set; }
+
+	public string? CurrentResourceTitle { get; protected set; }
+	protected int _currentTabIndex = 0;
+	protected ulong _currentMaterialResourceId = 0;
 
 	protected override async Task OnInitializedAsync() {
 		await base.OnInitializedAsync();
 		// If no Resources are specified, load all of them.
 		Resources ??= DbContext.Resources;
+	}
+
+	protected void OpenMaterialTab(Resource resource) {
+		Material = null;
+		_currentTabIndex = 1;
+		if(_currentMaterialResourceId != resource.Id) {
+			// Already loaded - don't refresh
+			CurrentResourceTitle = resource.Title;
+			DbContext.Entry(resource).Collection<Material>(nameof(resource.Materials)).Load();
+			Material = resource.Materials;
+		}
 	}
 }
