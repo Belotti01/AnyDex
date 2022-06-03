@@ -7,8 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AnyDex", "AnyDex.csproj", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AnyDexDB", "..\AnyDexDB\AnyDexDB.csproj", "{30926AD5-5F28-4346-B4E2-AA437F92888F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NL", "..\NLibrary\NL.csproj", "{1E06E71C-8E96-4F87-958F-28F2D381676C}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,14 +31,6 @@ Global
 		{30926AD5-5F28-4346-B4E2-AA437F92888F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{30926AD5-5F28-4346-B4E2-AA437F92888F}.Release|x64.ActiveCfg = Release|Any CPU
 		{30926AD5-5F28-4346-B4E2-AA437F92888F}.Release|x64.Build.0 = Release|Any CPU
-		{1E06E71C-8E96-4F87-958F-28F2D381676C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1E06E71C-8E96-4F87-958F-28F2D381676C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1E06E71C-8E96-4F87-958F-28F2D381676C}.Debug|x64.ActiveCfg = Debug|x64
-		{1E06E71C-8E96-4F87-958F-28F2D381676C}.Debug|x64.Build.0 = Debug|x64
-		{1E06E71C-8E96-4F87-958F-28F2D381676C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1E06E71C-8E96-4F87-958F-28F2D381676C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1E06E71C-8E96-4F87-958F-28F2D381676C}.Release|x64.ActiveCfg = Release|x64
-		{1E06E71C-8E96-4F87-958F-28F2D381676C}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

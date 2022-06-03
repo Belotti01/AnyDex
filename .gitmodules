@@ -1,6 +1,3 @@
-[submodule "NLibrary"]
-	path = NLibrary
-	url = https://github.com/Belotti01/NLibrary
-[submodule "AnyDexDB"]
-	path = AnyDexDB
+[submodule "Database"]
+	path = Database
 	url = https://github.com/Belotti01/AnyDexDB

@@ -35,11 +35,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AnyDexDB\AnyDexDB.csproj" />
-    <ProjectReference Include="..\NLibrary\NL.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Folder Include="Components\Dialogs\" />
     <Folder Include="Pages\Account\" />
   </ItemGroup>

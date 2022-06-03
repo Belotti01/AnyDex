@@ -6,7 +6,6 @@ global using System.Security.Claims;
 global using Microsoft.EntityFrameworkCore.ChangeTracking;
 global using Microsoft.AspNetCore.Components.Authorization;
 global using MudBlazor;
-global using NL.Extensions;
 
 global using AnyDexDB;
 global using AnyDexDB.Tables;
