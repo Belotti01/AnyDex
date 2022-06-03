@@ -5,16 +5,18 @@
 		<MudTabPanel Text="Resources">
 			<MudCard>
 				<MudCardContent Class="m-5">
+					<!-- Resources Table -->
 					<MudTable	Items="Resources"
 								Context="resource"
 								RowsPerPage="25"
 								Loading=@(Resources is null)
 								Striped
+								SortLabel="Sort By"
 								Hover>
 						<HeaderContent>
 							<AuthorizeView>
 								<Authorized>
-									<MudTh>Bookmark</MudTh>
+									<MudTh><MudTableSortLabel SortBy="(bool x) => x" >Bookmark</MudTableSortLabel></MudTh>
 								</Authorized>
 							</AuthorizeView>
 
@@ -41,11 +43,13 @@
 							<MudTd DataLabel="Creator">@resource.Creator</MudTd>
 							<MudTd DataLabel="Release Date">@resource.ReleaseDate.ToLongDateString()</MudTd>
 							<MudTd DataLabel="Material">
+								<!-- Using a button to make sure that the Icon always adheres to the stored value -->
 								<MudIconButton Icon="@Icons.Material.Filled.KeyboardDoubleArrowRight" 
 											   OnClick="() => OpenMaterialTab(resource)" />
 							</MudTd>
 						</RowTemplate>
 					</MudTable>
+
 				</MudCardContent>
 			</MudCard>
 		</MudTabPanel>
@@ -61,9 +65,10 @@
 					</CardHeaderContent>
 				</MudCardHeader>
 				<MudCardContent Class="m-5">
+					<!-- Material Table -->
 					<MudTable	Items="Material"
 								Context="material"
-								RowsPerPage="25"
+								RowsPerPage="20"
 								Loading=@(Material is null)
 								Striped
 								Hover>
@@ -80,6 +85,7 @@
 							<MudTd DataLabel="Length">@material.Length</MudTd>
 						</RowTemplate>
 					</MudTable>
+
 				</MudCardContent>
 			</MudCard>
 		</MudTabPanel>
@@ -96,7 +102,6 @@
 	protected SortedSet<ulong>? _bookmarkedResourceIds;
 	protected int _currentTabIndex = 0;
 	protected ulong _currentMaterialResourceId = 0;
-	[NotNull]
 	protected BookmarkManager? _bookmarkManager;
 
 	protected override async Task OnInitializedAsync() {
@@ -137,7 +142,7 @@
 	}
 
 	protected bool RemoveBookmark(Resource resource) {
-		bool removed = _bookmarkManager.TryRemove(CurrentUser!.Id, resource.Id);
+		bool removed = _bookmarkManager?.TryRemove(CurrentUser!.Id, resource.Id) ?? false;
 
 		if(removed) {
 			Snackbar.AddSuccess($"Bookmark removed from \"{resource.Title}\"");
@@ -149,7 +154,7 @@
 	}
 
 	protected bool AddBookmark(Resource resource) {
-		bool added = _bookmarkManager.TryAdd(CurrentUser!.Id, resource.Id);
+		bool added = _bookmarkManager?.TryAdd(CurrentUser!.Id, resource.Id) ?? false;
 
 		if(added) {
 			Snackbar.AddSuccess($"Bookmark added to \"{resource.Title}\"");

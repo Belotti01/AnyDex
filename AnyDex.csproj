@@ -40,7 +40,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Components\Data\" />
+    <Folder Include="Components\Dialogs\" />
     <Folder Include="Pages\Account\" />
   </ItemGroup>
 

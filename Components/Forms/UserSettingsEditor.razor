@@ -1,44 +1,35 @@
 ﻿@using System.ComponentModel.DataAnnotations
 @inherits BaseDbComponent<UserSettingsEditor>
 
-@if(User is not null) {
+@if(CurrentUser is not null) {
 	<MudTabs >
 		<!-- PROFILE -->
 		<MudTabPanel Text="Profile">
-			<EditForm Class="pa-4" Model="User" OnValidSubmit="SubmitProfile" OnInvalidSubmit="OnInvalidSubmit">
+			<EditForm Class="pa-4" Model="CurrentUser" OnValidSubmit="SubmitProfile" OnInvalidSubmit="OnInvalidSubmit">
 				<DataAnnotationsValidator />
 				<MudCard>
 					<MudCardContent>
 						<MudDynamicColumns>
 							<LeftColumn>
-								<MudPaper Elevation=1 Outlined Class="d-block p-4 w-75 mx-auto" >
-										<MudImage Class="d-block mx-auto" 
-												  Src="@(string.IsNullOrEmpty(User.ProfilePicture) 
-															? PLACEHOLDER_PROFILE_PICTURE 
-															: User.ProfilePicture)" 
-												  Elevation="2"
-												  Fluid
-												  Width="180" />
-										<MudTextField Label="URL:" 
-													  @bind-Value="User.ProfilePicture" 
-													  Clearable 
-													  For="() => User.ProfilePicture"/>
-								</MudPaper>
+								<ImageUrlInputField DefaultValue="@PLACEHOLDER_PROFILE_PICTURE"
+													HelperText="Link the image you want to use as Profile Picture here"
+													@bind-Value="CurrentUser.ProfilePicture"
+													Title="Profile Picture"/>
 								<MudTextField ReadOnly 
 											  Label="Username" 
-											  @bind-Value="User.UserName" 
-											  For="() => User.UserName" />
+											  @bind-Value="CurrentUser.UserName" 
+											  For="() => CurrentUser.UserName" />
 								<MudTextField Label="Full Name" 
-											  @bind-Value="User.FullName" 
-											  For="() => User.FullName" />
+											  @bind-Value="CurrentUser.FullName" 
+											  For="() => CurrentUser.FullName" />
 							</LeftColumn>
 							
 							<RightColumn>
 								<MudTextField Label="Bio" 
-												@bind-Value="User.Bio" 
+												@bind-Value="CurrentUser.Bio" 
 												Lines="16" 
 												Variant="Variant.Outlined" 
-												For="() => User.Bio" 
+												For="() => CurrentUser.Bio" 
 												MaxLength="1000"
 												Counter="1000" 
 												Immediate/>
@@ -62,13 +53,7 @@
 @code {
 	private const string PLACEHOLDER_PROFILE_PICTURE = "https://www.datacomplianceeurope.eu/wp-content/uploads/2016/12/logo-placeholder.png";
 
-	[NotNull]
-	public User? User { get; set; }
-
-	protected override void OnInitialized() {
-		base.OnInitialized();
-		User = CurrentUser;
-	}
+	protected bool IsProfilePictureSet => !string.IsNullOrEmpty(CurrentUser?.ProfilePicture);
 
 	protected void OnInvalidSubmit(EditContext context) {
 		// Input errors should be displayed in the form - this is just for debugging
@@ -79,7 +64,7 @@
 	}
 
 	protected async Task<int> SubmitProfile(EditContext context) {
-		DbContext.Entry(User).DetectChanges();
+		DbContext.Entry(CurrentUser!).DetectChanges();
 		int result = await DbContext.SaveChangesAsync();
 
 		if(result > 0) {

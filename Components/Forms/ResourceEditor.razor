@@ -4,7 +4,7 @@
 	<Authorized>
 		<MudCard>
 			@if(Resource is null) {
-				<MudProgressLinear Indeterminate/>
+				<MudProgressLinear Indeterminate Class="w-100"/>
 			}else {
 				<MudCardContent>
 					<MudForm Model="Resource">
@@ -40,7 +40,7 @@
 			// The resource was not found or no ID was specified
 			if(ResourceId != 0) {
 				// The specified resource does not exist
-				// ShowErrorNotification("Resource does not exist", "The resource could not be found. Keep editing to create a new resource instead.");
+				Snackbar.AddError("Resource does not exist. A new one will be created.");
 			}
 			Resource = new();
 			await DbContext.AddAsync(Resource);
