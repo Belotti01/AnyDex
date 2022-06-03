@@ -1,0 +1,48 @@
+﻿@using System.ComponentModel.DataAnnotations
+<MudCard Elevation="5" Class="d-block p-4 w-75 mx-auto">
+	<MudCardHeader Class="pt-0">
+		<MudSpacer />
+		<MudText Typo="Typo.subtitle1">
+			Profile Picture
+		</MudText>
+		<MudSpacer />
+	</MudCardHeader>
+	<MudCardContent>
+		<MudImage Class="d-block mx-auto" 
+					Src="@(string.IsNullOrEmpty(Value) 
+						? DefaultValue
+						: Value)"
+					Elevation="2"
+					Fluid
+					Width="180" 
+					ObjectPosition="ObjectPosition.Top"/>
+		<MudTextField Adornment="Adornment.End" 
+						AdornmentIcon="@Icons.Material.Outlined.Image" 
+						Label="URL:" 
+						@bind-Value="Value" 
+						Clearable 
+						For="() => Value"
+						HelperTextOnFocus="true"
+						HelperText="@HelperText"/>
+	</MudCardContent>
+</MudCard>
+
+@code {
+	[Required, Parameter]
+	public string? Value { get; set; }
+	[Parameter]
+	public string Title { get; set; } = "";
+	[Parameter]
+	public string DefaultValue { get; set; } = "";
+	[Parameter]
+	public string? HelperText { get; set; }
+
+	[Parameter]
+	public EventCallback<string> ValueChanged { get; set; }
+
+	public async Task OnValueChanged(string value) {
+		if(ValueChanged.HasDelegate) {
+			await ValueChanged.InvokeAsync(value);
+		}
+	}
+}

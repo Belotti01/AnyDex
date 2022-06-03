@@ -1,0 +1,30 @@
+﻿@using System.ComponentModel.DataAnnotations
+@inherits BaseDbComponent<ResourceView>
+
+<MudCard Elevation="3">
+	<MudCardContent>
+		<MudDynamicColumns>
+			<LeftColumn>
+				@if(EditMode) {
+					<EditForm Model="Resource">
+						<DataAnnotationsValidator />
+						<MudTextField Text="Title"
+									  @bind-Value="@Resource.Title"
+									  For="() => Resource.Title" />
+					</EditForm>
+				}else {
+					
+				}
+			</LeftColumn>
+		</MudDynamicColumns>
+	</MudCardContent>
+</MudCard>
+
+@code {
+	[Parameter, Required, NotNull]
+	public Resource? Resource { get; set; }
+	[Parameter]
+	public bool EditMode { get; set; } = false;
+
+
+}
