@@ -7,14 +7,16 @@ using System.Diagnostics;
 namespace AnyDex {
 	public static class Program {
 
+		private static IConfiguration? _configuration;
 		private static ILogger? Logger { get; set; }
 
 		public static async Task Main(string[] args) {
 			Logger = new LoggerFactory().CreateLogger(typeof(Program));
+			LoadConfiguration();
 
 			WebApplication app;
 			WebApplicationBuilder builder;
-			string connectionString = "user id=root;host=localhost;database=anydex;password=root";
+			string connectionString = _configuration.GetConnectionString("MainConnection");
 
 			Logger.LogInformation("Creating WebApplication Builder");
 			builder = WebApplication.CreateBuilder(args);
@@ -34,6 +36,15 @@ namespace AnyDex {
 
 			Logger.LogInformation("Starting Application");
 			app.Run();
+		}
+
+		[MemberNotNull(nameof(_configuration))]
+		private static void LoadConfiguration() {
+			ConfigurationBuilder configBuilder = new();
+			configBuilder
+				.SetBasePath(Directory.GetCurrentDirectory())
+				.AddJsonFile("appsettings.json");
+			_configuration = configBuilder.Build();
 		}
 
 		private static async Task InitializeDatabaseAsync() {
