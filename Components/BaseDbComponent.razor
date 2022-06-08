@@ -1,24 +1,24 @@
-﻿@inherits BaseComponent<TSelf>
+﻿@using Microsoft.EntityFrameworkCore
+@inherits BaseComponent<TSelf>
 @typeparam TSelf
 
 @code {
-	/// <summary>
-	/// Components' database accessor object.
-	/// </summary>
 	[Inject, NotNull]
-	protected AnyDexDb? DbContext { get; private set; }
+	protected IDbContextFactory<AnyDexDb>? DbContextFactory { get; private set; }
+	/// <summary>
+	/// Lazy-initialized component's shared database accessor object.
+	/// </summary>
+	protected AnyDexDb DbContext => _dbContext.Value;
+	private Lazy<AnyDexDb> _dbContext { get; set; } = null!;	// Should never be null as long as the OnInitialized is called
 
-	public User? CurrentUser { get; private set; }
-
-
-	protected override async Task OnInitializedAsync() {
-		await base.OnInitializedAsync();
-		// Eager-load the currently logged-in user
-		CurrentUser = await GetCurrentUserAsync();
+	protected override void OnInitialized() {
+		base.OnInitialized();
+		_dbContext = new(DbContextFactory.CreateDbContext());
+		TryValidateInitializationValues();
 	}
 
-	/// <summary> Lazy-load the <see cref="CurrentUser"/>, or retrieve it if it's already cached. </summary>
-	private async Task<User?> GetCurrentUserAsync() {
+	/// <summary> Load the <see cref="CurrentUser"/>'s data. </summary>
+	protected async ValueTask<User?> GetCurrentUserAsync() {
 		var auth = await AuthenticationStateTask;
 
 		if(auth.User.Identity is null) {
@@ -27,24 +27,23 @@
 
 		User? user = await UserManager.GetUserAsync(auth.User);
 #if DEBUG
-		string username = user?.UserName ?? "<Guest>";
-		Logger.LogDebug("Current User: {username}", username);
+	string username = user?.UserName ?? "<Guest>";
+	Logger.LogDebug("Current User: {username}", username);
 #endif
 		return user;
 	}
 
 	public override bool TryValidateInitializationValues() {
-		bool isAnyFieldInvalid = base.TryValidateInitializationValues();
+		bool isAnyFieldInvalid = false;
 		bool isCurrentFieldInvalid;
 		if(Logger is null) return false;	// Can't log errors. 
 											// Done after calling the overrided method to properly handle Logger null value in 
 											// the base method.
 
-
-		if(isCurrentFieldInvalid = DbContext is null)
-			LogNullRequiredField(nameof(DbContext));
+											
+		if(isCurrentFieldInvalid = DbContextFactory is null)
+			LogNullRequiredField(nameof(DbContextFactory));
 		isAnyFieldInvalid &= isCurrentFieldInvalid;
-
 		return isAnyFieldInvalid;
 	}
 }

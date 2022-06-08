@@ -1,0 +1,19 @@
+﻿@typeparam ModelType
+@typeparam T
+
+<MudTableColumnHeader Class="@Class" Style="@Style">
+	<MudSortableColumn T="T" ModelType="ModelType" SortBy="@SortBy">
+		@ChildContent
+	</MudSortableColumn>
+</MudTableColumnHeader>
+
+@code {
+	[Parameter]
+	public string Class { get; set; } = "";
+	[Parameter]
+	public string Style { get; set; } = "";
+	[Parameter, Required, NotNull]
+	public Func<ModelType, object>? SortBy { get; set; }
+	[Parameter]
+	public RenderFragment? ChildContent { get; set; }
+}

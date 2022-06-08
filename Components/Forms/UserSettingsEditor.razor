@@ -13,7 +13,7 @@
 							<LeftColumn>
 								<ImageUrlInputField DefaultValue="@PLACEHOLDER_PROFILE_PICTURE"
 													HelperText="Link the image you want to use as Profile Picture here"
-													@bind-Value="CurrentUser.ProfilePicture"
+													@bind-Value="@CurrentUser.ProfilePicture"
 													Title="Profile Picture"/>
 								<MudTextField ReadOnly 
 											  Label="Username" 
@@ -45,7 +45,7 @@
 			
 		<!-- ACCOUNT -->
 		<MudTabPanel Text="Account">
-			<UserPasswordEditor />
+			<UserPasswordEditor @bind-Value="@CurrentUser"/>
 		</MudTabPanel>
 	</MudTabs>
 }
@@ -53,7 +53,13 @@
 @code {
 	private const string PLACEHOLDER_PROFILE_PICTURE = "https://www.datacomplianceeurope.eu/wp-content/uploads/2016/12/logo-placeholder.png";
 
+	protected User? CurrentUser { get; set; }
 	protected bool IsProfilePictureSet => !string.IsNullOrEmpty(CurrentUser?.ProfilePicture);
+
+	protected override async Task OnInitializedAsync() {
+		await base.OnInitializedAsync();
+		CurrentUser = await GetCurrentUserAsync();
+	}
 
 	protected void OnInvalidSubmit(EditContext context) {
 		// Input errors should be displayed in the form - this is just for debugging

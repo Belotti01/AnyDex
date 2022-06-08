@@ -1,8 +1,15 @@
-﻿@using Microsoft.AspNetCore.Identity
+﻿@using AnyDex.Data.Themes
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Mvc
+@attribute [IgnoreAntiforgeryToken]
 @inherits LayoutComponentBase
 
+@inject NavigationManager _navigationManager
+@inject SignInManager<User> _signInManager
+
+
 <!-- Service Providers: Hidden components that allow their usage over any page -->
-<MudThemeProvider @ref="ThemeProvider" Theme="Theme" @bind-IsDarkMode="IsDarkModeEnabled" />
+<MudThemeProvider @ref="ThemeProvider" Theme="Theme" @bind-IsDarkMode="_isDarkModeEnabled" />
 <MudDialogProvider @ref="DialogProvider" CloseOnEscapeKey="true" />
 <MudSnackbarProvider />
 
@@ -11,16 +18,41 @@
     <!-- Top Menu -->
     <MudAppBar Elevation="1">
         <!-- Left Side -->
-        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" 
+                       Color="Color.Inherit" 
+                       Edge="Edge.Start"
+                       OnClick="@((e) => DrawerToggle())" />
         <MudText Typo="Typo.h5" Class="ml-3">AnyDex Project</MudText>
         <MudSpacer />
         <!-- Right Side -->
-        <MudIconButton Href="https://github.com/Belotti01/AnyDex" Target="_blank" Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" />
-        <MudToggleIconButton @bind-Toggled="IsDarkModeEnabled" ToggledIcon="@Icons.Material.Filled.DarkMode" Icon="@Icons.Material.Filled.LightMode" Color="Color.Inherit" Edge="Edge.End" />
+        <MudIconButton Href="https://github.com/Belotti01/AnyDex" 
+                       Target="_blank" 
+                       Icon="@Icons.Custom.Brands.GitHub" 
+                       Color="Color.Inherit" 
+                       Title="AnyDex on GitHub" />
+        <MudToggleIconButton @bind-Toggled="_isDarkModeEnabled" 
+                             ToggledIcon="@Icons.Material.Filled.DarkMode" 
+                             Icon="@Icons.Material.Filled.LightMode" 
+                             Color="Color.Inherit" Edge="Edge.End"
+                             Title="Switch to Dark Mode" 
+                             ToggledTitle="Switch to Light Mode" />
+        <!-- User Options -->
+        <MudMenu Class="ms-1" Icon="@Icons.Material.Filled.Person" Size="Size.Large" TransformOrigin="Origin.TopCenter" AnchorOrigin="Origin.BottomLeft">
+            <AuthorizeView>
+                <Authorized>
+                    <MudMenuItem><MudNavLink Href="/User/Settings">Settings</MudNavLink></MudMenuItem>
+                    <MudMenuItem><MudNavLink Href="/Identity/Account/Logout">Logout</MudNavLink></MudMenuItem>
+                </Authorized>
+                <NotAuthorized>
+                    <MudMenuItem><MudNavLink Href="/Identity/Account/Login">Login</MudNavLink></MudMenuItem>
+                    <MudMenuItem><MudNavLink Href="/Identity/Account/Register">Register</MudNavLink></MudMenuItem>
+                </NotAuthorized>
+            </AuthorizeView>
+        </MudMenu>
     </MudAppBar>
 
     <!-- Side Menu -->
-    <MudDrawer @bind-Open="IsDrawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
+    <MudDrawer @bind-Open="_isDrawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
         <NavBarMenu />
     </MudDrawer>
 
@@ -41,28 +73,29 @@
     private MudThemeProvider? ThemeProvider { get; set; }
     [NotNull]
     private MudDialogProvider? DialogProvider { get; set; }
-    private MudTheme Theme { get; set; } = new();
-    // Default to TRUE to avoid throwing a flashbang to dark-mode user
-    private bool IsDarkModeEnabled { get; set; } = true;
-    private bool IsDrawerOpen { get; set; } = true;
+    private MudTheme Theme { get; set; } = DefaultTheme.Theme;
+    // Default to TRUE to avoid throwing a flashbang to dark-mode user on page load
+    private bool _isDarkModeEnabled = true;
+    private bool _isDrawerOpen = true;
+
 
     protected override async Task OnAfterRenderAsync(bool firstRender) {
         if(firstRender) {
             bool systemPreference = await ThemeProvider.GetSystemPreference();
             // Skip re-rendering if nothing actually changes
-            if(IsDarkModeEnabled != systemPreference) {
-                IsDarkModeEnabled = systemPreference;
+            if(_isDarkModeEnabled != systemPreference) {
+                _isDarkModeEnabled = systemPreference;
                 StateHasChanged();
             }
         }
         await base.OnAfterRenderAsync(firstRender);
     }
 
-    protected async Task ShowLoginDialog() {
-        //TODO
+    void NavigateTo(string link) {
+        _navigationManager.NavigateTo(link);
     }
 
     void DrawerToggle() {
-        IsDrawerOpen = !IsDrawerOpen;
+        _isDrawerOpen = !_isDrawerOpen;
     }
 }

@@ -1,0 +1,10 @@
+﻿<MudThemeProvider Theme="@Theme" />
+
+@code {
+	public static MudTheme Theme = new();
+
+	static DefaultTheme() {
+		Theme.PaletteDark.Info = Colors.Grey.Lighten1;
+		Theme.Palette.Info = Colors.Grey.Darken1;
+	}
+}

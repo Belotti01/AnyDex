@@ -1,0 +1,35 @@
+﻿@inherits BaseDbComponent<QuizEditor>
+
+<MudPaper Elevation="3">
+	@if(CurrentQuestion is not null) {
+		<EditForm Model="CurrentQuestion">
+			<MudDynamicColumns>
+				<LeftColumn>
+					<MudTextField @bind-Value="Quiz.Title"
+								  Label="Title"
+								  For="() => Quiz.Title" />
+					<ImageUrlInputField DefaultValue="@null"
+										HelperText="This image will be displayed alongside the question"
+										Title="Image"
+										@bind-Value="CurrentQuestion.ImageUrl" />
+				</LeftColumn>
+				<RightColumn>
+					
+				</RightColumn>
+			</MudDynamicColumns>
+		</EditForm>
+	}
+</MudPaper>
+
+@code {
+	[Parameter, Required, NotNull]
+	public Quiz? Quiz { get; set; }
+	public ICollection<QuizQuestion> Questions => Quiz.QuizQuestions;
+	public QuizQuestion? CurrentQuestion => _currentQuestionId == 0
+		? null
+		: Quiz.QuizQuestions.FirstOrDefault(x => x.Id == _currentQuestionId);
+	protected ulong _currentQuestionId = 0;
+
+
+	
+}

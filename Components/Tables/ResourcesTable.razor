@@ -1,115 +1,73 @@
 ﻿@inherits BaseDbComponent<ResourcesTable>
 
-<MudTabs Class="mx-5 mt-5" @bind-ActivePanelIndex="_currentTabIndex" KeepPanelsAlive>
+<MudWrap Type="MudWrapType.Primary">
+	<MudDataGrid Items="Resources" 
+				 Context="resource"
+				 Filterable
+				 Sortable
+				 Loading="_isLoading">
+			<Columns>
+				<Column T="Resource" Field="@nameof(Resource.Title)" Groupable="true"/>
+				<Column T="Resource" Field="@nameof(Resource.Creator)" Groupable="true"/>
+				<Column T="Resource" Field="@nameof(Resource.ReleaseDate)" Hideable="true" Title="Release Date"/>
+				<Column T="Resource" Context="column" SortBy="x => x.Materials.Count" Hideable="true" Title="Materials">
+					<CellTemplate>
+						@column.Item.Materials.Count
+					</CellTemplate>
+				</Column>
+				<!-- Columns visible only by logged users -->
+				<AuthorizeView>
+					<Authorized>
+						<Column T="Resource" Context="column" Title="Status" Sortable="false" Groupable="true" GroupBy="x => GetUserProgressStatus(x)">
+							<CellTemplate>
+								<MudIconButton Icon="@Icons.Material.Filled.Edit" />
+									@(GetUserProgressStatus(column.Item).ToText())
+							</CellTemplate>
+						</Column>
+						<Column T="Resource" Context="column" Title="" Sortable="false" >
+							<CellTemplate>
+								<MudToggleIconButton Toggled="_bookmarkedResourceIds?.Contains(column.Item.Id) ?? false"
+													 ToggledChanged="(bool newValue) => ToggleBookmark(column.Item)"
+													 Icon="@Icons.Material.Filled.BookmarkBorder"
+													 ToggledIcon="@Icons.Material.Filled.Bookmark" />
+							</CellTemplate>
+						</Column>
+					</Authorized>
+				</AuthorizeView>
+			</Columns>
+	</MudDataGrid>
+</MudWrap>
 
-		<MudTabPanel Text="Resources">
-			<MudCard>
-				<MudCardContent Class="m-5">
-					<!-- Resources Table -->
-					<MudTable	Items="Resources"
-								Context="resource"
-								RowsPerPage="25"
-								Loading=@(Resources is null)
-								Striped
-								SortLabel="Sort By"
-								Hover>
-						<HeaderContent>
-							<AuthorizeView>
-								<Authorized>
-									<MudTh><MudTableSortLabel SortBy="(bool x) => x" >Bookmark</MudTableSortLabel></MudTh>
-								</Authorized>
-							</AuthorizeView>
-
-							<MudTh>Title</MudTh>
-							<MudTh>Description</MudTh>
-							<MudTh>Summary</MudTh>
-							<MudTh>Creator</MudTh>
-							<MudTh>Release Date</MudTh>
-							<MudTh>Material</MudTh>
-						</HeaderContent>
-						<RowTemplate>
-							<AuthorizeView>
-								<Authorized>
-									<MudTd>
-										<MudIconButton Icon="@GetBookmarkIcon(resource)"
-													   OnClick="() => ToggleBookmark(resource)" />
-									</MudTd>
-								</Authorized>
-							</AuthorizeView>
-
-							<MudTd DataLabel="Title">@resource.Title</MudTd>
-							<MudTd DataLabel="Description">@resource.Description</MudTd>
-							<MudTd DataLabel="Summary">@resource.Summary</MudTd>
-							<MudTd DataLabel="Creator">@resource.Creator</MudTd>
-							<MudTd DataLabel="Release Date">@resource.ReleaseDate.ToLongDateString()</MudTd>
-							<MudTd DataLabel="Material">
-								<!-- Using a button to make sure that the Icon always adheres to the stored value -->
-								<MudIconButton Icon="@Icons.Material.Filled.KeyboardDoubleArrowRight" 
-											   OnClick="() => OpenMaterialTab(resource)" />
-							</MudTd>
-						</RowTemplate>
-					</MudTable>
-
-				</MudCardContent>
-			</MudCard>
-		</MudTabPanel>
-		
-
-		<MudTabPanel Text="Material" Disabled="Material is null">
-			<MudCard>
-				<MudCardHeader>
-					<CardHeaderContent>
-						<MudText Align="Align.Center" Typo="Typo.h3">
-							@CurrentResourceTitle
-						</MudText> 
-					</CardHeaderContent>
-				</MudCardHeader>
-				<MudCardContent Class="m-5">
-					<!-- Material Table -->
-					<MudTable	Items="Material"
-								Context="material"
-								RowsPerPage="20"
-								Loading=@(Material is null)
-								Striped
-								Hover>
-						<HeaderContent>
-							<MudTh>Title</MudTh>
-							<MudTh>Description</MudTh>
-							<MudTh>Type</MudTh>
-							<MudTh>Length</MudTh>
-						</HeaderContent>
-						<RowTemplate>
-							<MudTd DataLabel="Title">@material.Title</MudTd>
-							<MudTd DataLabel="Description">@material.Description</MudTd>
-							<MudTd DataLabel="Type">@material.Type.ToText()</MudTd>
-							<MudTd DataLabel="Length">@material.Length</MudTd>
-						</RowTemplate>
-					</MudTable>
-
-				</MudCardContent>
-			</MudCard>
-		</MudTabPanel>
-
-</MudTabs>
 
 @code {
+	protected readonly int[] _pageSizeOptions = new int[] { 15, 25, 50 };
 	[Parameter]
 	public IEnumerable<Resource>? Resources { get; set; }
 	public IEnumerable<Material>? Material { get; set; }
-
+	public User? CurrentUser { get; set; }
 
 	public string? CurrentResourceTitle { get; protected set; }
 	protected SortedSet<ulong>? _bookmarkedResourceIds;
 	protected int _currentTabIndex = 0;
 	protected ulong _currentMaterialResourceId = 0;
 	protected BookmarkManager? _bookmarkManager;
+	protected bool _isLoading = true;
+	protected Task? _backgroundLoader;
 
 	protected override async Task OnInitializedAsync() {
 		await base.OnInitializedAsync();
 		// If no Resources are specified, load all of them.
-		_bookmarkManager = new(DbContext);
+		CurrentUser = await GetCurrentUserAsync();
+		_backgroundLoader = new(LoadData);
+		_backgroundLoader.AndForget();
+		_backgroundLoader.Start();
+	}
+
+	protected void LoadData() {
 		Resources ??= DbContext.Resources;
+		_bookmarkManager = new();
 		LoadBookmarkedResources();
+		_isLoading = false;
 	}
 
 	protected void OpenMaterialTab(Resource resource) {
@@ -179,5 +137,13 @@
 			&& _bookmarkedResourceIds.Contains(resource.Id)
 				? Icons.Material.Filled.Bookmark
 				: Icons.Material.Outlined.BookmarkBorder;
+	}
+
+	protected ProgressStatus GetUserProgressStatus(Resource resource) {
+		var progress = CurrentUser?.Progresses.FirstOrDefault(x => x.ResourceId == resource.Id);
+
+		if(progress is null)
+			return ProgressStatus.None;
+		return progress.Status; ;
 	}
 }

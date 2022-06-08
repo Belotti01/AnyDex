@@ -1,0 +1,12 @@
+﻿<MudTh Class="@Class" Style="@Style">
+	@ChildContent
+</MudTh>
+
+@code {
+	[Parameter]
+	public string Class { get; set; } = "";
+	[Parameter]
+	public string Style { get; set; } = "";
+	[Parameter]
+	public RenderFragment? ChildContent { get; set; }
+}

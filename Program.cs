@@ -11,8 +11,8 @@ namespace AnyDex {
 		private static ILogger? Logger { get; set; }
 
 		public static async Task Main(string[] args) {
-			Logger = new LoggerFactory().CreateLogger(typeof(Program));
 			LoadConfiguration();
+			Logger = new LoggerFactory().CreateLogger(typeof(Program));
 
 			WebApplication app;
 			WebApplicationBuilder builder;

@@ -1,31 +1,27 @@
 ﻿@using System.ComponentModel.DataAnnotations
-<MudCard Elevation="5" Class="d-block p-4 w-75 mx-auto">
-	<MudCardHeader Class="pt-0">
-		<MudSpacer />
-		<MudText Typo="Typo.subtitle1">
-			Profile Picture
-		</MudText>
-		<MudSpacer />
-	</MudCardHeader>
-	<MudCardContent>
-		<MudImage Class="d-block mx-auto" 
-					Src="@(string.IsNullOrEmpty(Value) 
-						? DefaultValue
-						: Value)"
-					Elevation="2"
-					Fluid
-					Width="180" 
-					ObjectPosition="ObjectPosition.Top"/>
-		<MudTextField Adornment="Adornment.End" 
-						AdornmentIcon="@Icons.Material.Outlined.Image" 
-						Label="URL:" 
-						@bind-Value="Value" 
-						Clearable 
-						For="() => Value"
-						HelperTextOnFocus="true"
-						HelperText="@HelperText"/>
-	</MudCardContent>
-</MudCard>
+<MudPaper Elevation="5" Class="d-block p-4 w-75 mx-auto">
+	<MudText Class="ml-0 mt-0" Color="@Color.Info" Typo="Typo.subtitle1">
+		@Title
+	</MudText>
+
+	<MudImage Class="d-block mx-auto" 
+				Src="@(string.IsNullOrEmpty(Value) 
+					? DefaultValue
+					: Value)"
+				Elevation="2"
+				Fluid
+				Width="180" 
+				ObjectPosition="ObjectPosition.Top"/>
+	<MudTextField Adornment="Adornment.End" 
+					AdornmentIcon="@Icons.Material.Outlined.Image" 
+					Label="URL:" 
+					Value="@Value" 
+					ValueChanged="ValueChanged"
+					Clearable
+					For="() => Value"
+					HelperTextOnFocus="true"
+					HelperText="@HelperText"/>
+</MudPaper>
 
 @code {
 	[Required, Parameter]

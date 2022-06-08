@@ -1,0 +1,44 @@
+﻿<MudPaper Elevation="_elevation"
+		  Outlined="Outlined"
+		  Class="@_class">
+	@ChildContent
+</MudPaper>
+
+@code {
+	[Parameter]
+	public MudWrapType Type { get; set; } = MudWrapType.Secondary;
+	[Parameter]
+	public RenderFragment? ChildContent { get; set; }
+	[Parameter]
+	public bool Outlined { get; set; } = false;
+
+	protected string? _class { get; set; }
+
+	protected int _elevation;
+
+	protected override void OnInitialized() {
+		base.OnInitialized();
+		SetComponentType(Type);
+	}
+
+	protected void SetComponentType(MudWrapType type) {
+		// Using "_" instead of "MudWrapType.Secondary" to ensure presence of default values
+		string[] sizeNames = new string[] { };
+		_class = "";
+		// Elevation
+		_elevation = type switch {
+			MudWrapType.Primary => 5,
+			_ => 3,
+		};
+		// Margin
+		_class += type switch {
+			MudWrapType.Primary => BootstrapClass.GenerateMarginClasses(2, 3, 4, 4, 5),
+			_ => BootstrapClass.GenerateMarginClasses(1, 2, 2, 3, 4)
+		};
+		// Padding
+		_class += type switch {
+			MudWrapType.Primary => BootstrapClass.GeneratePaddingClasses(2, 2, 3, 3, 4),
+			_ => BootstrapClass.GeneratePaddingClasses(1, 2, 2, 3, 3)
+		};
+	}
+}
