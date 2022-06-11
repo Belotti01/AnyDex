@@ -1,0 +1,75 @@
+﻿@inherits BaseDbComponent<MaterialsTable>
+
+<_MudWrap Type="MudWrapType.Primary">
+    @if(_isLoading || Materials is null) {
+		<MudProgressLinear Indeterminate/>
+    }else {
+		<MudDataGrid Items="Materials" 
+					 Context="material"
+					 Filterable
+					 Sortable
+					 Loading="_isLoading">
+				<Columns>
+					<Column T="Material" Field="@nameof(Material.Title)" Title="@Local["Title"]" Groupable="true"/>
+					<Column T="Material" Field="@nameof(Material.Owner)" Title="@Local["Creator"]" Groupable="true"/>
+					<Column T="Material" Field="@nameof(Material.ReleaseDate)" Title="@Local["ReleaseDate"]" Hideable="true"/>
+					<Column T="Material" Context="column" Sortable="false" Hideable="true" Title="@Local["Type"]" >
+						<CellTemplate>
+							@Local[column.Item.Type.ToText()]
+						</CellTemplate>
+					</Column>
+				
+					<!-- Show the LENGTH field, plus the progress alongside of it if the user is logged in -->
+					<AuthorizeView>
+						<Authorized>
+							<Column T="Material" Context="column" Title="@Local["Progress"]" SortBy="(x) => x.Length" Hideable="true" >
+								<CellTemplate>
+									@Local[GetProgressText(column.Item)]
+								</CellTemplate>
+							</Column>
+						</Authorized>
+						<NotAuthorized>
+							<Column T="Material" Field="@nameof(Material.Length)" Title="@Local["Length"]" Hideable="true" />
+						</NotAuthorized>
+					</AuthorizeView>
+				</Columns>
+		</MudDataGrid>
+	}
+</_MudWrap>
+
+@code {
+	[Parameter]
+	public IEnumerable<Material>? Materials { get; set; }
+	protected User? CurrentUser { get; set; }
+
+	protected bool _isLoading = true;
+	protected Task? _backgroundTask;
+
+	protected override void OnInitialized() {
+		base.OnInitialized();
+
+		_backgroundTask = new(async() => await LoadData());
+		_backgroundTask.AndForget();
+		_backgroundTask.Start();
+	}
+
+	protected async Task LoadData() {
+		Materials ??= DbContext.Materials;
+		_isLoading = false;
+		await InvokeAsync(() => StateHasChanged());
+	}
+
+	protected override async Task OnInitializedAsync() {
+		await base.OnInitializedAsync();
+		CurrentUser = await GetCurrentUserAsync();
+	}
+
+	protected string GetProgressText(Material material) {
+		if(CurrentUser is null)		// Shouldn't get here - just in case, return the length
+			return material.Length.ToString();
+		Progress? progress = CurrentUser.Progresses.FirstOrDefault(x => x.MaterialId == material.Id);
+		uint progressValue = progress?.Value ?? 0;
+
+		return $"{progressValue}/{material.Length}";
+	}
+}

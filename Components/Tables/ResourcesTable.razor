@@ -1,41 +1,45 @@
 ﻿@inherits BaseDbComponent<ResourcesTable>
 
 <_MudWrap Type="MudWrapType.Primary">
-	<MudDataGrid Items="Resources" 
-				 Context="resource"
-				 Filterable
-				 Sortable
-				 Loading="_isLoading">
-			<Columns>
-				<Column T="Resource" Field="@nameof(Resource.Title)" Title="@Local["Title"]" Groupable="true"/>
-				<Column T="Resource" Field="@nameof(Resource.Creator)" Title="@Local["Creator"]" Groupable="true"/>
-				<Column T="Resource" Field="@nameof(Resource.ReleaseDate)" Title="@Local["ReleaseDate"]" Hideable="true"/>
-				<Column T="Resource" Context="column" SortBy="x => x.Materials.Count" Hideable="true" Title="@Local["Materials"]" >
-					<CellTemplate>
-						@column.Item.Materials.Count
-					</CellTemplate>
-				</Column>
-				<!-- Columns visible only by logged users -->
-				<AuthorizeView>
-					<Authorized>
-						<Column T="Resource" Context="column" Title="Status" Sortable="false" Groupable="true" GroupBy="x => GetUserProgressStatus(x)">
-							<CellTemplate>
-								<MudIconButton Icon="@Icons.Material.Filled.Edit" />
-									@(GetUserProgressStatus(column.Item).ToText())
-							</CellTemplate>
-						</Column>
-						<Column T="Resource" Context="column" Title="" Sortable="false" >
-							<CellTemplate>
-								<MudToggleIconButton Toggled="_bookmarkedResourceIds?.Contains(column.Item.Id) ?? false"
-													 ToggledChanged="(bool newValue) => ToggleBookmark(column.Item)"
-													 Icon="@Icons.Material.Filled.BookmarkBorder"
-													 ToggledIcon="@Icons.Material.Filled.Bookmark" />
-							</CellTemplate>
-						</Column>
-					</Authorized>
-				</AuthorizeView>
-			</Columns>
-	</MudDataGrid>
+    @if(_isLoading || Resources is null) {
+		<MudProgressLinear Indeterminate/>
+    }else {
+		<MudDataGrid Items="Resources" 
+					 Context="resource"
+					 Filterable
+					 Sortable
+					 Loading="_isLoading">
+				<Columns>
+					<Column T="Resource" Field="@nameof(Resource.Title)" Title="@Local["Title"]" Groupable="true"/>
+					<Column T="Resource" Field="@nameof(Resource.Creator)" Title="@Local["Creator"]" Groupable="true"/>
+					<Column T="Resource" Field="@nameof(Resource.ReleaseDate)" Title="@Local["ReleaseDate"]" Hideable="true"/>
+					<Column T="Resource" Context="column" SortBy="x => x.Materials.Count" Hideable="true" Title="@Local["Materials"]" >
+						<CellTemplate>
+							@column.Item.Materials.Count
+						</CellTemplate>
+					</Column>
+					<!-- Columns visible only by logged users -->
+					<AuthorizeView>
+						<Authorized>
+							<Column T="Resource" Context="column" Title="Status" Sortable="false" Groupable="true" GroupBy="x => GetUserProgressStatus(x)">
+								<CellTemplate>
+									<MudIconButton Icon="@Icons.Material.Filled.Edit" />
+										@(GetUserProgressStatus(column.Item).ToText())
+								</CellTemplate>
+							</Column>
+							<Column T="Resource" Context="column" Title="" Sortable="false" >
+								<CellTemplate>
+									<MudToggleIconButton Toggled="_bookmarkedResourceIds?.Contains(column.Item.Id) ?? false"
+														 ToggledChanged="(bool newValue) => ToggleBookmark(column.Item)"
+														 Icon="@Icons.Material.Filled.BookmarkBorder"
+														 ToggledIcon="@Icons.Material.Filled.Bookmark" />
+								</CellTemplate>
+							</Column>
+						</Authorized>
+					</AuthorizeView>
+				</Columns>
+		</MudDataGrid>
+	}
 </_MudWrap>
 
 
@@ -141,10 +145,10 @@
 	}
 
 	protected ProgressStatus GetUserProgressStatus(Resource resource) {
-		var progress = CurrentUser?.Progresses.FirstOrDefault(x => x.ResourceId == resource.Id);
+		var progress = CurrentUser?.Progresses.FirstOrDefault(x => x.MaterialId == resource.Id);
 
 		if(progress is null)
 			return ProgressStatus.None;
-		return progress.Status; ;
+		return progress.Status;
 	}
 }

@@ -1,6 +1,9 @@
-﻿<MudNavMenu>
-    <MudNavLink Href="/" Match="NavLinkMatch.All">Dashboard</MudNavLink>
-    <MudNavLink Href="/Resources" Match="NavLinkMatch.All">Resources</MudNavLink>
+﻿@inherits BaseComponent<NavBarMenu>
+
+<MudNavMenu>
+    <MudNavLink Href="/" Match="NavLinkMatch.All">@Local["Dashboard"]</MudNavLink>
+    <MudNavLink Href="/Resources" Match="NavLinkMatch.All">@Local["Resources"]</MudNavLink>
+    <MudNavLink Href="/Materials" Match="NavLinkMatch.All">@Local["Materials"]</MudNavLink>
 </MudNavMenu>
 
 @code {

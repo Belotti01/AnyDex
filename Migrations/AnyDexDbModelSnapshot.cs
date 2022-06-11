@@ -191,6 +191,9 @@ namespace AnyDex.Migrations
                     b.Property<string>("Owner")
                         .HasColumnType("longtext");
 
+                    b.Property<DateTime?>("ReleaseDate")
+                        .HasColumnType("datetime(6)");
+
                     b.Property<ulong>("ResourceId")
                         .HasColumnType("bigint unsigned");
 
@@ -278,7 +281,7 @@ namespace AnyDex.Migrations
                         .IsRequired()
                         .HasColumnType("tinyint(1)");
 
-                    b.Property<ulong>("ResourceId")
+                    b.Property<ulong>("MaterialId")
                         .HasColumnType("bigint unsigned");
 
                     b.Property<DateTime?>("StartDate")
@@ -295,7 +298,7 @@ namespace AnyDex.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ResourceId");
+                    b.HasIndex("MaterialId");
 
                     b.HasIndex("UserId");
 
@@ -484,7 +487,7 @@ namespace AnyDex.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<DateTime>("ReleaseDate")
+                    b.Property<DateTime?>("ReleaseDate")
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("Summary")
@@ -877,9 +880,9 @@ namespace AnyDex.Migrations
 
             modelBuilder.Entity("AnyDexDB.Tables.Progress", b =>
                 {
-                    b.HasOne("AnyDexDB.Tables.Resource", "Resource")
+                    b.HasOne("AnyDexDB.Tables.Material", "Material")
                         .WithMany("Progresses")
-                        .HasForeignKey("ResourceId")
+                        .HasForeignKey("MaterialId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -889,7 +892,7 @@ namespace AnyDex.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Resource");
+                    b.Navigation("Material");
 
                     b.Navigation("User");
                 });
@@ -1086,6 +1089,8 @@ namespace AnyDex.Migrations
             modelBuilder.Entity("AnyDexDB.Tables.Material", b =>
                 {
                     b.Navigation("MaterialLinks");
+
+                    b.Navigation("Progresses");
                 });
 
             modelBuilder.Entity("AnyDexDB.Tables.Quiz", b =>
@@ -1113,8 +1118,6 @@ namespace AnyDex.Migrations
                     b.Navigation("Learningsteps");
 
                     b.Navigation("Materials");
-
-                    b.Navigation("Progresses");
 
                     b.Navigation("Ratings");
 
