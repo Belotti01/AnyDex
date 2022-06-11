@@ -37,7 +37,13 @@
                              Title="Switch to Dark Mode" 
                              ToggledTitle="Switch to Light Mode" />
         <!-- User Options -->
-        <MudMenu Class="ms-1" Icon="@Icons.Material.Filled.Person" Size="Size.Large" TransformOrigin="Origin.TopCenter" AnchorOrigin="Origin.BottomLeft">
+        <MudMenu Class="ms-1" 
+                 Dense
+                 Icon="@Icons.Material.Filled.Person" 
+                 Size="Size.Large" 
+                 TransformOrigin="Origin.TopCenter" 
+                 AnchorOrigin="Origin.BottomLeft"
+                 ActivationEvent="MouseEvent.MouseOver">
             <AuthorizeView>
                 <Authorized>
                     <MudMenuItem><MudNavLink Href="/User/Settings">Settings</MudNavLink></MudMenuItem>

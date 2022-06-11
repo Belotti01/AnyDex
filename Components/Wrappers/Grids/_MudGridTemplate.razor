@@ -1,0 +1,16 @@
+﻿<MudGrid Class="pr-4 pl-4" Justify="@Justify">
+	@ChildContent
+</MudGrid>
+
+@code {
+	[Parameter]
+	public RenderFragment? ChildContent { get; set; }
+	[Parameter]
+	public Justify Justify { get; set; } = Justify.Center;
+	[Parameter]
+	public GridType Type { get; set; } = GridType.Dense;
+
+	protected override void OnInitialized() {
+		base.OnInitialized();
+	}
+}

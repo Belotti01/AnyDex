@@ -319,6 +319,10 @@ namespace AnyDex.Migrations
                         .IsRequired()
                         .HasColumnType("tinyint(1)");
 
+                    b.Property<string>("LanguageCode")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.Property<DateTime>("ReleaseDate")
                         .HasColumnType("datetime(6)");
 
@@ -364,6 +368,9 @@ namespace AnyDex.Migrations
                         .HasColumnType("bigint unsigned");
 
                     b.Property<string>("Hint")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("ImageUrl")
                         .HasColumnType("longtext");
 
                     b.Property<bool?>("IsDisabled")
@@ -470,6 +477,10 @@ namespace AnyDex.Migrations
                         .HasColumnType("longtext");
 
                     b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("ImageUrl")
                         .IsRequired()
                         .HasColumnType("longtext");
 

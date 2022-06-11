@@ -1,11 +1,11 @@
 ﻿@typeparam ModelType
 @typeparam T
 
-<MudTableColumnHeader Class="@Class" Style="@Style">
+<_MudTableColumnHeader Class="@Class" Style="@Style">
 	<MudSortableColumn T="T" ModelType="ModelType" SortBy="@SortBy">
 		@ChildContent
 	</MudSortableColumn>
-</MudTableColumnHeader>
+</_MudTableColumnHeader>
 
 @code {
 	[Parameter]

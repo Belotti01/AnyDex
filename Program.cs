@@ -6,36 +6,61 @@ using System.Diagnostics;
 
 namespace AnyDex {
 	public static class Program {
+		private const bool RELOAD_DB_DATA = true;
 
 		private static IConfiguration? _configuration;
-		private static ILogger? Logger { get; set; }
 
 		public static async Task Main(string[] args) {
 			LoadConfiguration();
-			Logger = new LoggerFactory().CreateLogger(typeof(Program));
+			Console.ForegroundColor = ConsoleColor.Cyan;
 
+			string separatorLine = new('-', 50);
+			string connectionStringAlias = "MainConnection";
 			WebApplication app;
 			WebApplicationBuilder builder;
-			string connectionString = _configuration.GetConnectionString("MainConnection");
+			string connectionString = _configuration.GetConnectionString(connectionStringAlias);
+			ServerVersion dbServerVersion = ServerVersion.AutoDetect(connectionString);
+			Console.WriteLine(separatorLine);
+			PrintStartupInformation(connectionStringAlias, dbServerVersion);
+			Console.WriteLine(separatorLine);
 
-			Logger.LogInformation("Creating WebApplication Builder");
+			Console.Write("Creating WebApplication Builder...");
 			builder = WebApplication.CreateBuilder(args);
-			Logger.LogInformation("Configuring WebApplication Services");
-			AddServices(builder, connectionString);
+			Console.WriteLine(" Done");
+			Console.Write("Configuring WebApplication Services...");
+			AddServices(builder, connectionString, dbServerVersion);
 			ConfigureIdentity(builder);
 			ConfigureLogging(builder);
+			Console.WriteLine(" Done");
+			Console.WriteLine(separatorLine);
 
-			Logger.LogInformation("Building WebApplication");
+			Console.Write("Building WebApplication...");
 			app = builder.Build();
-			Logger.LogInformation("Configuring WebApplication");
+			Console.WriteLine(" Done");
+			Console.Write("Configuring WebApplication...");
 			ConfigureHttp(app);
 			ConfigureEndpoints(app);
+			ConfigureLocalization(app);
+			Console.WriteLine(" Done");
+			Console.WriteLine(separatorLine);
 
-			Logger.LogInformation("Initializing Database data");
+			Console.Write("Loading Database data:\n");
 			await InitializeDatabaseAsync();
+			Console.ForegroundColor = ConsoleColor.Cyan;
+			Console.WriteLine(separatorLine);
+			Console.Write("\n\n\n");
+			Console.ResetColor();
 
-			Logger.LogInformation("Starting Application");
 			app.Run();
+		}
+
+		private static void PrintStartupInformation(string connectionStringAlias, ServerVersion dbServerVersion) {
+			Console.Title = $"AnyDex v{Environment.Version}";
+
+			// Log startup information
+			Console.WriteLine($"Running on {Environment.OSVersion.VersionString}");
+			Console.WriteLine($"Database Server Version: {dbServerVersion}");
+			Console.WriteLine($"Using connection string \"{connectionStringAlias}\"");
 		}
 
 		[MemberNotNull(nameof(_configuration))]
@@ -55,12 +80,27 @@ namespace AnyDex {
 			if(Debugger.IsAttached) {
 				// Generate test data in the database
 				bool createUsers = !db.Users.Any();
-				AnyDexDB.Testing.DummyGenerator.GenerateData(createUsers);
+				AnyDexDB.Testing.DummyGenerator.GenerateData(createUsers, RELOAD_DB_DATA);
 				AnyDexDB.Testing.DummyGenerator.LogData();
 			}
 		}
 
-		private static void AddServices(WebApplicationBuilder builder, string connectionString) {
+		private static void ConfigureLocalization(WebApplication app) {
+			// Add support for ASP.NET MVC Localization
+			var cultures = new string[] {
+				"en-US", "it-IT"
+			};
+			int defaultCultureIndex = 0;
+			
+			var localizationOptions = new RequestLocalizationOptions()
+				.SetDefaultCulture(cultures[defaultCultureIndex])
+				.AddSupportedCultures(cultures)
+				.AddSupportedUICultures(cultures);
+
+			app.UseRequestLocalization(localizationOptions);
+		}
+
+		private static void AddServices(WebApplicationBuilder builder, string connectionString, ServerVersion serverVersion) {
 			builder.Services.AddScoped<DialogService>();
 			builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 			builder.Services.AddRazorPages();
@@ -79,8 +119,6 @@ namespace AnyDex {
 				config.SnackbarConfiguration.ClearAfterNavigation = true;
 				config.SnackbarConfiguration.MaxDisplayedSnackbars = 4;
 			});
-			// Add support for ASP.NET MVC Localization
-			builder.Services.AddLocalization(x => x.ResourcesPath = "Resources");
 			// Suppress null-value warning for entity attributes with the [Required] data validation property
 			builder.Services.AddControllers(
 				options => options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true
@@ -90,15 +128,17 @@ namespace AnyDex {
 				options.UseLazyLoadingProxies(true);
 				options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
 			});
+			// Enable Localization
+			builder.Services.AddLocalization();
 			// Inject DateTime Client Time Zone converter
 			builder.Services.AddScoped<DateTimeLocalizer>();
 		}
 
 		private static void ConfigureLogging(WebApplicationBuilder builder) {
-			builder.Services.AddLogging(options => {
-				options.AddConsole();
-				options.AddDebug();
-			});
+			builder.Logging
+				.ClearProviders()
+				.AddConsole()
+				.SetMinimumLevel(Debugger.IsAttached ? LogLevel.Debug : LogLevel.Information);
 		}
 
 		/// <summary>
@@ -121,7 +161,7 @@ namespace AnyDex {
 				options.Password.RequiredLength = 6;
 				options.Password.RequiredUniqueChars = 2;
 
-				// Lockout settings
+				// Lockout (= account locked after multiple failed attempts) settings
 				options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
 				options.Lockout.MaxFailedAccessAttempts = 5;
 				options.Lockout.AllowedForNewUsers = false;
@@ -159,6 +199,7 @@ namespace AnyDex {
 		private static void ConfigureEndpoints(WebApplication app) {
 			app.UseStaticFiles();
 			app.UseRouting();
+			app.UseRequestLocalization();
 
 			app.UseAuthentication();
 			app.UseAuthorization();

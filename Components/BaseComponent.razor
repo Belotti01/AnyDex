@@ -1,13 +1,18 @@
 ﻿@using System.Diagnostics
+@using Microsoft.Extensions.Localization
 @typeparam TSelf
 @inherits MudComponentBase
+@implements IDisposable
 
 <!-- Injected Services -->
 @inject SignInManager<User> _signInManager
 @inject DateTimeLocalizer _clientDateTime
 @inject DialogService _dialogService
+@inject IStringLocalizer<TSelf> _local
 
 @code {
+    protected bool _disposed { get; private set; }
+
     // Cascading Parameters inherithed from the layout
     [CascadingParameter, NotNull]
     public MudDialogProvider? DialogProvider { get; set; }
@@ -16,11 +21,13 @@
     [CascadingParameter, NotNull]
     public Task<AuthenticationState>? AuthenticationStateTask { get; set; }
 
+    // Encapsulate injected data to abolish overwrite
     /// <inheritdoc cref="SignInManager{TUser}.UserManager"/>
     public UserManager<User> UserManager => SignInManager.UserManager;
-    public SignInManager<User> SignInManager { get => _signInManager; }
-    public DateTimeLocalizer ClientDateTime { get => _clientDateTime; }
-    public DialogService DialogService { get => _dialogService; }
+    public SignInManager<User> SignInManager => _signInManager;
+    public DateTimeLocalizer ClientDateTime => _clientDateTime;
+    public DialogService DialogService => _dialogService;
+    public IStringLocalizer<TSelf> Local => _local;
 
     /// <summary>
     /// Logs' output stream accessor object for components.
@@ -62,7 +69,7 @@
         if(isCurrentFieldInvalid = SignInManager is null)
             LogNullRequiredField(nameof(SignInManager));
         isAnyFieldInvalid &= isCurrentFieldInvalid;
-        
+
         if(isCurrentFieldInvalid = Snackbar is null)
             LogNullRequiredField(nameof(Snackbar));
         isAnyFieldInvalid &= isCurrentFieldInvalid;
@@ -71,11 +78,24 @@
             LogNullRequiredField(nameof(DialogService));
         isAnyFieldInvalid &= isCurrentFieldInvalid;
 
+        if(isCurrentFieldInvalid = Local is null)
+            LogNullRequiredField(nameof(Local));
+        isAnyFieldInvalid &= isCurrentFieldInvalid;
+
         return isAnyFieldInvalid;
     }
 
     protected void LogNullRequiredField(string fieldName) {
         Logger.LogCritical("Required Base Component field '{fieldName}' has no set value.", fieldName);
+    }
+
+    protected override bool ShouldRender() {
+        // Prevent Null exception when an async method invokes StateHasChanged() after the component has been disposed of
+        return base.ShouldRender() && !_disposed;
+    }
+
+    public void Dispose() {
+        _disposed = true;
     }
 
 }

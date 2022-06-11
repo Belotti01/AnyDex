@@ -1,0 +1,28 @@
+﻿<MudItem xs="@xs"
+		 sm="@sm"
+		 md="@md"
+		 lg="@lg"
+		 xl="@xl"
+		 xxl="@xxl">
+	@ChildContent
+</MudItem>
+
+@code {
+	protected int xs, sm, md, lg, xl, xxl;
+	[Parameter]
+	public GridType Type { get; set; } = GridType.Dense;
+	[Parameter]
+	public RenderFragment? ChildContent { get; set; }
+
+	protected override void OnInitialized() {
+		base.OnInitialized();
+		SetSize(Type);
+	}
+
+	public void SetSize(GridType type) {
+		(xs, sm, md, lg, xl, xxl) = type switch {
+			GridType.Dense => (12, 4, 4, 3, 3, 2),
+			_ => (12, 6, 4, 4, 3, 3)
+		};
+	}
+}

@@ -3,7 +3,7 @@
 <MudPaper Elevation="3">
 	@if(CurrentQuestion is not null) {
 		<EditForm Model="CurrentQuestion">
-			<MudDynamicColumns>
+			<_MudDynamicColumns>
 				<LeftColumn>
 					<MudTextField @bind-Value="Quiz.Title"
 								  Label="Title"
@@ -16,7 +16,7 @@
 				<RightColumn>
 					
 				</RightColumn>
-			</MudDynamicColumns>
+			</_MudDynamicColumns>
 		</EditForm>
 	}
 </MudPaper>

@@ -1,16 +1,16 @@
 ﻿@inherits BaseDbComponent<ResourcesTable>
 
-<MudWrap Type="MudWrapType.Primary">
+<_MudWrap Type="MudWrapType.Primary">
 	<MudDataGrid Items="Resources" 
 				 Context="resource"
 				 Filterable
 				 Sortable
 				 Loading="_isLoading">
 			<Columns>
-				<Column T="Resource" Field="@nameof(Resource.Title)" Groupable="true"/>
-				<Column T="Resource" Field="@nameof(Resource.Creator)" Groupable="true"/>
-				<Column T="Resource" Field="@nameof(Resource.ReleaseDate)" Hideable="true" Title="Release Date"/>
-				<Column T="Resource" Context="column" SortBy="x => x.Materials.Count" Hideable="true" Title="Materials">
+				<Column T="Resource" Field="@nameof(Resource.Title)" Title="@Local["Title"]" Groupable="true"/>
+				<Column T="Resource" Field="@nameof(Resource.Creator)" Title="@Local["Creator"]" Groupable="true"/>
+				<Column T="Resource" Field="@nameof(Resource.ReleaseDate)" Title="@Local["ReleaseDate"]" Hideable="true"/>
+				<Column T="Resource" Context="column" SortBy="x => x.Materials.Count" Hideable="true" Title="@Local["Materials"]" >
 					<CellTemplate>
 						@column.Item.Materials.Count
 					</CellTemplate>
@@ -36,7 +36,7 @@
 				</AuthorizeView>
 			</Columns>
 	</MudDataGrid>
-</MudWrap>
+</_MudWrap>
 
 
 @code {
@@ -58,26 +58,19 @@
 		await base.OnInitializedAsync();
 		// If no Resources are specified, load all of them.
 		CurrentUser = await GetCurrentUserAsync();
-		_backgroundLoader = new(LoadData);
+		_backgroundLoader = new(async() => await LoadData());
 		_backgroundLoader.AndForget();
 		_backgroundLoader.Start();
 	}
 
-	protected void LoadData() {
+	protected async Task LoadData() {
 		Resources ??= DbContext.Resources;
 		_bookmarkManager = new();
 		LoadBookmarkedResources();
 		_isLoading = false;
-	}
-
-	protected void OpenMaterialTab(Resource resource) {
-		Material = null;
-		_currentTabIndex = 1;
-		// If the material list is already loaded, don't bother refreshing it
-		if(_currentMaterialResourceId != resource.Id) {
-			CurrentResourceTitle = resource.Title;
-			Material = resource.Materials;
-		}
+		try {
+			await InvokeAsync(StateHasChanged);
+		}catch { /* Page might have been closed, and there is no way to prevent this without making this method synchronous */ }
 	}
 
 	protected void ToggleBookmark(Resource resource) {
@@ -100,27 +93,37 @@
 	}
 
 	protected bool RemoveBookmark(Resource resource) {
-		bool removed = _bookmarkManager?.TryRemove(CurrentUser!.Id, resource.Id) ?? false;
+		if(_bookmarkManager is null) {
+			return false;
+		}
+
+		bool removed = _bookmarkManager.TryRemove(CurrentUser!.Id, resource.Id);
 
 		if(removed) {
 			Snackbar.AddSuccess($"Bookmark removed from \"{resource.Title}\"");
-			_bookmarkedResourceIds!.Remove(resource.Id);
+			_bookmarkedResourceIds?.Remove(resource.Id);
 		}else {
 			Snackbar.AddWarning($"Bookmark could not be removed. Please try again later.");
 		}
-		return removed;
+
+		return _bookmarkManager.SaveChanges();
 	}
 
 	protected bool AddBookmark(Resource resource) {
-		bool added = _bookmarkManager?.TryAdd(CurrentUser!.Id, resource.Id) ?? false;
+		if(_bookmarkManager is null) {
+			return false;
+		}
+
+		bool added = _bookmarkManager.TryAdd(CurrentUser!.Id, resource.Id);
 
 		if(added) {
 			Snackbar.AddSuccess($"Bookmark added to \"{resource.Title}\"");
-			_bookmarkedResourceIds!.Add(resource.Id);
+			_bookmarkedResourceIds?.Add(resource.Id);
 		}else {
 			Snackbar.AddWarning($"Bookmark could not be added. Please try again later.");
 		}
-		return added;
+
+		return _bookmarkManager.SaveChanges();
 	}
 
 	protected void LoadBookmarkedResources() {
