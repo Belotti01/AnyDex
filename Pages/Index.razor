@@ -1,43 +1,53 @@
 ﻿@page "/"
 <PageTitle>Dashboard</PageTitle>
 
-<MudGrid Class="m-2 mx-auto" Style="width: 90%;">
-    <MudItem xs="12" sm="6" md="4">
-        <MudPaper Elevation="@Elevation" Class="@PaperClass" Style="height: 200px;"></MudPaper>
-    </MudItem>
-    <MudItem xs="12" sm="6" md="4">
-        <MudPaper Elevation="@Elevation" Class="@PaperClass" Style="height: 200px;"></MudPaper>
-    </MudItem>
-    <MudItem xs="12" sm="12" md="4">
-        <MudPaper Elevation="@Elevation" Class="@PaperClass" Style="height: 200px;"></MudPaper>
-    </MudItem>
-    <MudItem xs="12" sm="6">
-        <MudGrid>
-            <MudItem xs="12">
-                <MudPaper Elevation="@Elevation" Class="@PaperClass" Style="height: 200px;"></MudPaper>
-            </MudItem>
-            <MudItem xs="12">
-                <MudPaper Elevation="@Elevation" Class="@PaperClass" Style="height: 200px;"></MudPaper>
-            </MudItem>
-        </MudGrid>
-    </MudItem>
-    <MudItem xs="12" sm="6">
-        <MudPaper Elevation="@Elevation" Class="@PaperClass" Style="height: 100%"></MudPaper>
-    </MudItem>
-    <MudItem xs="12" sm="6" md="4">
-        <MudPaper Elevation="@Elevation" Class="@PaperClass" Style="height: 200px;"></MudPaper>
-    </MudItem>
-    <MudItem xs="12" sm="6" md="4">
-        <MudPaper Elevation="@Elevation" Class="@PaperClass" Style="height: 200px;"></MudPaper>
-    </MudItem>
-    <MudItem xs="12" sm="12" md="4">
-        <MudPaper Elevation="@Elevation" Class="@PaperClass" Style="height: 200px;"></MudPaper>
-    </MudItem>
-</MudGrid>
-
+@if(_isLoading) {
+    <MudProgressCircular Indeterminate />
+}else {
+    <MudGrid Class="m-2 mx-auto" Style="width: 90%;">
+        <MudItem xs="12" sm="6" md="4">
+            <MudPaper Elevation="@Elevation" Class="@PaperClass" Style="height: 200px;"></MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <MudPaper Elevation="@Elevation" Class="@PaperClass" Style="height: 200px;"></MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="12" md="4">
+            <MudPaper Elevation="@Elevation" Class="@PaperClass" Style="height: 200px;"></MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="6">
+            <MudGrid>
+                <MudItem xs="12">
+                    <MudPaper Elevation="@Elevation" Class="@PaperClass" Style="height: 200px;"></MudPaper>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudPaper Elevation="@Elevation" Class="@PaperClass" Style="height: 200px;"></MudPaper>
+                </MudItem>
+            </MudGrid>
+        </MudItem>
+        <MudItem xs="12" sm="6">
+            <MudPaper Elevation="@Elevation" Class="@PaperClass" Style="height: 100%"></MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <MudPaper Elevation="@Elevation" Class="@PaperClass" Style="height: 200px;"></MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <MudPaper Elevation="@Elevation" Class="@PaperClass" Style="height: 200px;"></MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="12" md="4">
+            <MudPaper Elevation="@Elevation" Class="@PaperClass" Style="height: 200px;"></MudPaper>
+        </MudItem>
+    </MudGrid>
+}
 @code {
     protected const string PaperClass = "pa-3";
     protected const int Elevation = 3;
+
+    protected bool _isLoading = true;
+
+    protected override void OnInitialized() {
+        base.OnInitialized();
+        _isLoading = false;
+    }
 }
 
 

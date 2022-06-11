@@ -6,7 +6,7 @@ using System.Diagnostics;
 
 namespace AnyDex {
 	public static class Program {
-		private const bool RELOAD_DB_DATA = true;
+		private const bool RELOAD_DB_DATA = false;
 
 		private static IConfiguration? _configuration;
 
@@ -112,7 +112,7 @@ namespace AnyDex {
 				config.SnackbarConfiguration.PreventDuplicates = false;
 				config.SnackbarConfiguration.NewestOnTop = false;
 				config.SnackbarConfiguration.ShowCloseIcon = true;
-				config.SnackbarConfiguration.VisibleStateDuration = 10000;
+				config.SnackbarConfiguration.VisibleStateDuration = 5000;
 				config.SnackbarConfiguration.HideTransitionDuration = 500;
 				config.SnackbarConfiguration.ShowTransitionDuration = 500;
 				config.SnackbarConfiguration.SnackbarVariant = Variant.Filled;
@@ -126,7 +126,7 @@ namespace AnyDex {
 			// Inject DbContextFactory
 			builder.Services.AddDbContextFactory<AnyDexDb>(options => {
 				options.UseLazyLoadingProxies(true);
-				options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+				options.UseMySql(connectionString, serverVersion);
 			});
 			// Enable Localization
 			builder.Services.AddLocalization();

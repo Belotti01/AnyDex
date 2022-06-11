@@ -1,0 +1,30 @@
+﻿<_MudWrap Type="MudWrapType.Secondary">
+    <MudCardHeader>
+        <CardHeaderContent>
+            <MudText Typo="Typo.h6">@Resource.Title</MudText>
+            <MudText Typo="Typo.caption" Class="mt-0 d-block" Color="Color.Surface">@Resource.Creator</MudText>
+        </CardHeaderContent>
+    </MudCardHeader>
+    <MudCardContent Style="height: 300px;">
+        <_MudDynamicColumns>
+            <LeftColumn>
+                <MudImage Class="w-100"
+                          Src="@(string.IsNullOrEmpty(Resource.ImageUrl) 
+                                ? "https://www.autospuitbedrijfkuperus.nl/wp-content/uploads/2017/08/placeholder-300x185.gif"
+                                : Resource.ImageUrl)" />
+            </LeftColumn>
+            <RightColumn>
+                <MudText Class="" Typo="Typo.body2">
+                    @Resource.Summary
+                </MudText>
+            </RightColumn>
+        </_MudDynamicColumns>
+    </MudCardContent>
+</_MudWrap>
+
+@code {
+    [Parameter]
+    public RenderFragment? Actions { get; set; }
+    [Parameter, Required, NotNull]
+    public Resource? Resource { get; set; }
+}

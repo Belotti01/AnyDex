@@ -4,51 +4,27 @@
     @if(_isLoading || Resources is null) {
 		<MudProgressLinear Indeterminate/>
     }else {
-        <_MudGridTemplate Type="GridType.Wide">
+        <_MudGridTemplate Type="GridType.Dense">
             @foreach(var resource in Resources) {
-                <_MudItemTemplate Type="GridType.Wide">
-                    <MudCard>
-                        <MudCardHeader>
-                            <CardHeaderContent>
-                                <MudText Typo="Typo.body1">@resource.Title</MudText>
-                                <MudText Typo="Typo.h6">@resource.Creator</MudText>
-                            </CardHeaderContent>
-                        </MudCardHeader>
-                        <MudCardContent>
-                            <_MudDynamicColumns>
-                                <LeftColumn>
-                                    <MudImage Class="w-100"
-                                              Src="@(string.IsNullOrEmpty(resource.ImageUrl) 
-                                                    ? "https://www.autospuitbedrijfkuperus.nl/wp-content/uploads/2017/08/placeholder-300x185.gif"
-                                                    : resource.ImageUrl)" />
-                                </LeftColumn>
-                                <RightColumn>
-                                    <div class="h-100 w-100">
-                                    <MudText Typo="Typo.body2">
-                                        @resource.Summary
-                                    </MudText>
-                                    </div>
-                                </RightColumn>
-                            </_MudDynamicColumns>
-                        </MudCardContent>
-
-                        <AuthorizeView>
-                            <Authorized>
-                                <MudCardActions>
+                <_MudItemTemplate Type="GridType.Dense">
+                    <ResourceCard Resource="resource">
+                        <Actions>
+                            <AuthorizeView>
+                                <Authorized>
                                     <MudToggleIconButton Toggled="_bookmarkedResourceIds?.Contains(resource.Id) ?? false"
 									                        Disabled="@_isLoading"				     
                                                             ToggledChanged="(bool newValue) => ToggleBookmark(resource)"
-													        Icon="@Icons.Material.Filled.BookmarkBorder"
-													        ToggledIcon="@Icons.Material.Filled.Bookmark" />
+										                    Icon="@Icons.Material.Filled.BookmarkBorder"
+										                    ToggledIcon="@Icons.Material.Filled.Bookmark" />
                                     @if(Editable) {
                                         <MudSpacer />
                                         <MudIconButton Icon="@Icons.Filled.Edit" Color="Color.Primary" />
                                         <MudIconButton Icon="@Icons.Filled.Delete" Color="Color.Error" />
                                     }
-                                </MudCardActions>
-                            </Authorized>
-                        </AuthorizeView>
-                    </MudCard>
+                                </Authorized>
+                            </AuthorizeView>
+                        </Actions>
+                    </ResourceCard>
 
                 </_MudItemTemplate>
             }

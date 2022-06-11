@@ -17,12 +17,13 @@
 	protected override void OnInitialized() {
 		base.OnInitialized();
 		SetSize(Type);
+		StateHasChanged();
 	}
 
 	public void SetSize(GridType type) {
 		(xs, sm, md, lg, xl, xxl) = type switch {
 			GridType.Dense => (12, 4, 4, 3, 3, 2),
-			_ => (12, 6, 4, 4, 3, 3)
+			_ => (12, 6, 4, 4, 4, 3)
 		};
 	}
 }

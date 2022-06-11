@@ -1,19 +1,36 @@
 ﻿@using System.ComponentModel.DataAnnotations
 
-<MudGrid Justify="Justify.SpaceEvenly" Spacing="2">
-	<MudItem xxl="4" xl="5" lg="5" md="md" sm="9" xs="11">
+<_MudGridTemplate Justify="Justify.SpaceEvenly" Type="Type">
+	<MudItem xs="@(StackIfSmall ? _fullSpan : _halfSpan)" 
+			 sm="@(StackIfSmall ? _fullSpan : _halfSpan)" 
+			 md="_halfSpan" 
+			 lg="_halfSpan" 
+			 xl="_halfSpan" 
+			 xxl="_halfSpan">
 		@LeftColumn
 	</MudItem>
-	<MudItem xxl="4" xl="5" lg="5" md="md" sm="9" xs="11">
+	<MudItem xs="@(StackIfSmall ? _fullSpan : _halfSpan)" 
+			 sm="@(StackIfSmall ? _fullSpan : _halfSpan)" 
+			 md="_halfSpan" 
+			 lg="_halfSpan" 
+			 xl="_halfSpan" 
+			 xxl="_halfSpan">
 		@RightColumn
 	</MudItem>
-</MudGrid>
+</_MudGridTemplate>
 
 @code {
+	protected int _halfSpan { get; set; } = 6;
+	protected int _fullSpan { get; set; } = 12;
+
 	[Parameter, Required]
 	public RenderFragment? LeftColumn { get; set; }
 	[Parameter, Required]
 	public RenderFragment? RightColumn { get; set; }
 	[Parameter]
-	public int md { get; set; } = 6;
+	public GridType Type { get; set; } = GridType.Dense;
+	[Parameter]
+	public bool StackIfSmall { get; set; } = true;
+	[Parameter]
+	public bool StackIfExtraSmall { get; set; } = true;
 }

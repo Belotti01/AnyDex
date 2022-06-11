@@ -1,4 +1,4 @@
-﻿<MudGrid Class="pr-4 pl-4" Justify="@Justify">
+﻿<MudGrid Justify="@Justify" Spacing="_spacing">
 	@ChildContent
 </MudGrid>
 
@@ -10,7 +10,18 @@
 	[Parameter]
 	public GridType Type { get; set; } = GridType.Dense;
 
+	protected int _spacing = 2;
+
 	protected override void OnInitialized() {
 		base.OnInitialized();
+		SetSize(Type);
+		StateHasChanged();
+	}
+
+	public void SetSize(GridType type) {
+		(_spacing) = type switch {
+			GridType.Dense => (1),
+			_ => (3)
+		};
 	}
 }
