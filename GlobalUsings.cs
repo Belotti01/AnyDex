@@ -10,6 +10,7 @@ global using MudBlazor;
 global using AnyDexDB;
 global using AnyDexDB.Tables;
 global using AnyDexDB.Utils;
+global using AnyDexDB.Utils.Managers;
 global using AnyDex.Components.Auth;
 global using AnyDex.Components.Forms;
 global using AnyDex.Shared.Extensions;
