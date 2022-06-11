@@ -68,9 +68,7 @@
 		_bookmarkManager = new();
 		LoadBookmarkedResources();
 		_isLoading = false;
-		try {
-			await InvokeAsync(StateHasChanged);
-		}catch { /* Page might have been closed, and there is no way to prevent this without making this method synchronous */ }
+		await InvokeAsync(StateHasChanged);
 	}
 
 	protected void ToggleBookmark(Resource resource) {
