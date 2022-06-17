@@ -1,4 +1,5 @@
-﻿<MudItem xs="@xs"
+﻿@using System.Diagnostics
+<MudItem xs="@xs"
 		 sm="@sm"
 		 md="@md"
 		 lg="@lg"
@@ -10,20 +11,62 @@
 @code {
 	protected int xs, sm, md, lg, xl, xxl;
 	[Parameter]
-	public GridType Type { get; set; } = GridType.Dense;
+	public GridType Type { get; set; } = GridType.None;
 	[Parameter]
 	public RenderFragment? ChildContent { get; set; }
+	/// <summary> Value assigned for all screen sizes. Gets overwritten by the <see cref="Type"/>, if set. </summary>
+	[Parameter]
+	public int AbsoluteSize { get; set; } = 10;
+	/// <summary> Value assigned for all small screen sizes. Gets overwritten by the <see cref="Type"/>, if set. </summary>
+	/// <remarks> Defaults to the <see cref="AbsoluteSize"/> value. </remarks>
+	[Parameter]
+	public int AbsoluteSmallScreenSize { get; set; } = -1;
+	/// <summary>
+	/// Size values depending on the screen size. In order: xs, sm, md, lg, xl, xxl.
+	/// </summary>
+	[Parameter]
+	public int[]? Sizes { get; set; }
 
 	protected override void OnInitialized() {
 		base.OnInitialized();
-		SetSize(Type);
+		if(Sizes is not null) {
+			SetSizes(Sizes);
+			return;
+		}
+
+		if(Type == GridType.None) {
+			if(AbsoluteSmallScreenSize < 0) {
+				AbsoluteSmallScreenSize = AbsoluteSize;
+				SetSizes(AbsoluteSize);
+			} else {
+				int[] sizes = CalculateSizes(AbsoluteSmallScreenSize, AbsoluteSize);
+				SetSizes(sizes);
+			}
+		} else {
+			SetSizes(Type);
+		}
 		StateHasChanged();
 	}
 
-	public void SetSize(GridType type) {
+	public int[] CalculateSizes(int xsValue, int xxlValue) {
+		int[] sizes = new int[6];
+		int range = Math.Abs(xxlValue - xsValue);
+
+		for(int i = 0; i < sizes.Length; i++) {
+			sizes[i] = Math.Min(xxlValue, xsValue) + (int)Math.Round(range / (i + 1d));
+		}
+		return sizes;
+	}
+
+	public void SetSizes(GridType type) {
 		(xs, sm, md, lg, xl, xxl) = type switch {
-			GridType.Dense => (12, 4, 4, 3, 3, 2),
+			GridType.Dense => (12, 6, 4, 3, 3, 2),
 			_ => (12, 6, 4, 4, 4, 3)
 		};
+	}
+
+	public void SetSizes(params int[] sizes) {
+		sizes = sizes.Pad(6);		// Make sure there are 6 values in the array
+		(xs, sm, md, lg, xl, xxl) = (sizes[0], sizes[1], sizes[2], sizes[3], sizes[4], sizes[5]);
 	}
 }

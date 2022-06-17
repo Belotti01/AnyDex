@@ -1,0 +1,11 @@
+﻿<MudIcon Icon="@_icon" Class="@Class" Style="@($"{SizeStyle}")" />
+
+@code {
+	protected readonly string _icon = Icons.Material.Filled.RandomIcon();
+	[Parameter]
+	public string Class { get; set; } = "";
+	[Parameter]
+	public int Size {get; set;} = 2;
+
+	protected string SizeStyle => $"font-size: {Size}rem;";
+}

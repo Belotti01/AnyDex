@@ -1,25 +1,40 @@
 ﻿@inherits BaseDbComponent<QuizEditor>
 
-<MudPaper Elevation="3">
+<_MudWrap Type="MudWrapType.Primary">
 	@if(CurrentQuestion is not null) {
-		<EditForm Model="CurrentQuestion">
-			<_MudDynamicColumns>
-				<LeftColumn>
-					<MudTextField @bind-Value="Quiz.Title"
-								  Label="Title"
-								  For="() => Quiz.Title" />
-					<ImageUrlInputField DefaultValue="@null"
-										HelperText="This image will be displayed alongside the question"
-										Title="Image"
-										@bind-Value="CurrentQuestion.ImageUrl" />
-				</LeftColumn>
-				<RightColumn>
+		<EditForm Model="Quiz">
+			<DataAnnotationsValidator />
+
+			<_MudGridTemplate Justify="Justify.Center">
+				<_MudItemTemplate AbsoluteSmallScreenSize="12" AbsoluteSize="10">
+					<MudInput @bind-Value="@Quiz.Title" Text="@Local["Title"]" /><br />
+					<MudInput @bind-Value="@Quiz.Description" Text="@Local["Description"]" />
+				</_MudItemTemplate>
+				<_MudItemTemplate AbsoluteSize="5">
+					<MudCheckBox @bind-Checked="@Quiz.IsPublic" Label="@Local["Public"]" />
+				</_MudItemTemplate>
+				<_MudItemTemplate AbsoluteSize="7">
+					<MudLanguageComboBox @bind-Value="@Quiz.LanguageCode" />
+				</_MudItemTemplate>
+
+				<_MudDynamicColumns>
+					<LeftColumn>
+						<MudTextField @bind-Value="Quiz.Title"
+									  Label="Title"
+									  For="() => Quiz.Title" />
+						<ImageUrlInputField DefaultValue="@null"
+											HelperText="This image will be displayed alongside the question"
+											Title="Image"
+											@bind-Value="CurrentQuestion.ImageUrl" />
+					</LeftColumn>
+					<RightColumn>
 					
-				</RightColumn>
-			</_MudDynamicColumns>
+					</RightColumn>
+				</_MudDynamicColumns>
+			</_MudGridTemplate>
 		</EditForm>
 	}
-</MudPaper>
+</_MudWrap>
 
 @code {
 	[Parameter, Required, NotNull]

@@ -10,7 +10,7 @@
 
 <!-- Service Providers: Hidden components that allow their usage over any page -->
 <MudThemeProvider @ref="ThemeProvider" Theme="Theme" @bind-IsDarkMode="_isDarkModeEnabled" />
-<MudDialogProvider @ref="DialogProvider" CloseOnEscapeKey="true" />
+<MudDialogProvider CloseOnEscapeKey="true" FullWidth="true" />
 <MudSnackbarProvider />
 
 <!-- Page Layout -->
@@ -64,7 +64,9 @@
 
     <!-- Page Content -->
     <MudMainContent>
-        @Body
+        <CascadingValue Value="ThemeProvider">
+            @Body
+        </CascadingValue>
         <!-- "Scroll to Top" Button -->
         <MudScrollToTop>
             <MudFab Color="Color.Default" 

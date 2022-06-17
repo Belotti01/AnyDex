@@ -1,21 +1,26 @@
 ﻿@inherits BaseDbComponent<ResourcesTable>
 
 <_MudWrap Type="MudWrapType.Primary">
-    @if(_isLoading || Resources is null) {
+    @if(_isLoading || Materials is null) {
 		<MudProgressLinear Indeterminate/>
     }else {
-		<MudDataGrid Items="Resources" 
+		<MudDataGrid Items="Materials" 
 					 Context="resource"
 					 Filterable
 					 Sortable
-					 Loading="_isLoading">
+					 Loading="_isLoading"
+					 RowsPerPage="15">
 				<Columns>
 					<Column T="Resource" Field="@nameof(Resource.Title)" Title="@Local["Title"]" Groupable="true"/>
 					<Column T="Resource" Field="@nameof(Resource.Creator)" Title="@Local["Creator"]" Groupable="true"/>
-					<Column T="Resource" Field="@nameof(Resource.ReleaseDate)" Title="@Local["ReleaseDate"]" Hideable="true"/>
+					<Column T="Resource" Context="column" Field="@nameof(Resource.ReleaseDate)" Title="@Local["ReleaseDate"]" Hideable="true">
+						<CellTemplate>@(column.Item.ReleaseDate.HasValue ? column.Item.ReleaseDate.Value.ToString("dd/MM/yyyy") : "")</CellTemplate>	
+					</Column>
 					<Column T="Resource" Context="column" SortBy="x => x.Materials.Count" Hideable="true" Title="@Local["Materials"]" >
 						<CellTemplate>
-							@column.Item.Materials.Count
+							<MudButton EndIcon="@Icons.Material.Filled.MenuOpen" OnClick="(e) => OpenMaterialsDialog(column.Item)">
+								@column.Item.Materials.Count
+							</MudButton>
 						</CellTemplate>
 					</Column>
 					<!-- Columns visible only by logged users -->
@@ -38,15 +43,18 @@
 						</Authorized>
 					</AuthorizeView>
 				</Columns>
+				<PagerContent>
+					<_MudGridPager TItem="Resource"/>
+				</PagerContent>
 		</MudDataGrid>
 	}
 </_MudWrap>
 
 
 @code {
-	protected readonly int[] _pageSizeOptions = new int[] { 15, 25, 50 };
+	protected readonly int[] _pageSizeOptions = new int[] { 5, 15, 25, 50 };
 	[Parameter]
-	public IEnumerable<Resource>? Resources { get; set; }
+	public IEnumerable<Resource>? Materials { get; set; }
 	public IEnumerable<Material>? Material { get; set; }
 	public User? CurrentUser { get; set; }
 
@@ -62,17 +70,10 @@
 		await base.OnInitializedAsync();
 		// If no Resources are specified, load all of them.
 		CurrentUser = await GetCurrentUserAsync();
-		_backgroundLoader = new(async() => await LoadData());
-		_backgroundLoader.AndForget();
-		_backgroundLoader.Start();
-	}
-
-	protected async Task LoadData() {
-		Resources ??= DbContext.Resources;
+		Materials ??= DbContext.Resources;
 		_bookmarkManager = new();
 		LoadBookmarkedResources();
 		_isLoading = false;
-		await InvokeAsync(StateHasChanged);
 	}
 
 	protected void ToggleBookmark(Resource resource) {
@@ -150,5 +151,12 @@
 		if(progress is null)
 			return ProgressStatus.None;
 		return progress.Status;
+	}
+
+	protected void OpenMaterialsDialog(Resource resource) {
+		DialogParameters parameters = new() {
+			{ nameof(MaterialsDialog.Materials), resource.Materials }
+		};
+		ShowDialog<MaterialsDialog>("Materials", MaxWidth.Large, parameters);
 	}
 }

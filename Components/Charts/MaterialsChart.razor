@@ -1,0 +1,26 @@
+﻿@inherits BaseDbComponent<MaterialsChart>
+
+<PieChart Data="_data" Title="@($"{DbContext.Materials.Count()} {Local["Resources"]}")"/>
+
+@code {
+	[Parameter]
+	public string Height { get; set; } = "400px";
+
+	protected ChartData<int>[]? _data;
+
+	protected override void OnInitialized() {
+		base.OnInitialized();
+		PieDataset<int> data = new();
+
+		MaterialType[] types = Enum.GetValues<MaterialType>();
+		_data = new ChartData<int>[types.Length];
+
+		for(int i = 0; i < types.Length; i++) {
+			_data[i] = new(
+				DbContext.Materials.Count(x => x.Type == types[i]),
+				types[i].ToText(),
+				types[i].GetColor()
+			);
+		}
+	}
+}

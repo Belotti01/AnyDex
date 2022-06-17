@@ -8,7 +8,8 @@
 					 Context="material"
 					 Filterable
 					 Sortable
-					 Loading="_isLoading">
+					 Loading="_isLoading"
+					 RowsPerPage="15">
 				<Columns>
 					<Column T="Material" Field="@nameof(Material.Title)" Title="@Local["Title"]" Groupable="true"/>
 					<Column T="Material" Field="@nameof(Material.Owner)" Title="@Local["Creator"]" Groupable="true"/>
@@ -33,6 +34,9 @@
 						</NotAuthorized>
 					</AuthorizeView>
 				</Columns>
+				<PagerContent>
+					<_MudGridPager TItem="Material"/>
+				</PagerContent>
 		</MudDataGrid>
 	}
 </_MudWrap>
@@ -65,8 +69,9 @@
 	}
 
 	protected string GetProgressText(Material material) {
-		if(CurrentUser is null)		// Shouldn't get here - just in case, return the length
+		if(CurrentUser is null)
 			return material.Length.ToString();
+
 		Progress? progress = CurrentUser.Progresses.FirstOrDefault(x => x.MaterialId == material.Id);
 		uint progressValue = progress?.Value ?? 0;
 

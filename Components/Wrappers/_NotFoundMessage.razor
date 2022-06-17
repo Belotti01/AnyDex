@@ -1,0 +1,14 @@
+﻿
+<MudGrid Justify="Justify.Center">
+    <_MudItemTemplate AbsoluteMaxSize="5">
+        <_RandomIcon Size="6" />
+    </_MudItemTemplate>
+    <_MudItemTemplate AbsoluteMaxSize="10">
+        <MudText>@Message</MudText>
+    </_MudItemTemplate>
+</MudGrid>
+
+@code {
+    [Parameter, Required, NotNull]
+    public string? Message { get; set; }
+}

@@ -123,6 +123,9 @@
   <data name="Materials" xml:space="preserve">
     <value>Material</value>
   </data>
+  <data name="No Materials Found" xml:space="preserve">
+    <value>No Materials found</value>
+  </data>
   <data name="Profile Picture" xml:space="preserve">
     <value>Profile Picture</value>
   </data>

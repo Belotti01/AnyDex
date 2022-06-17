@@ -101,7 +101,6 @@ namespace AnyDex {
 		}
 
 		private static void AddServices(WebApplicationBuilder builder, string connectionString, ServerVersion serverVersion) {
-			builder.Services.AddScoped<DialogService>();
 			builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 			builder.Services.AddRazorPages();
 			builder.Services.AddServerSideBlazor();

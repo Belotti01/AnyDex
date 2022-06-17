@@ -7,7 +7,7 @@
 <!-- Injected Services -->
 @inject SignInManager<User> _signInManager
 @inject DateTimeLocalizer _clientDateTime
-@inject DialogService _dialogService
+@inject IDialogService _dialogService
 @inject IStringLocalizer<TSelf> _local
 
 @code {
@@ -26,7 +26,7 @@
     public UserManager<User> UserManager => SignInManager.UserManager;
     public SignInManager<User> SignInManager => _signInManager;
     public DateTimeLocalizer ClientDateTime => _clientDateTime;
-    public DialogService DialogService => _dialogService;
+    public IDialogService DialogService => _dialogService;
     public IStringLocalizer<TSelf> Local => _local;
 
     /// <summary>
@@ -44,12 +44,6 @@
         TryValidateInitializationValues();
     }
 
-    public string Localize(string text) {
-        // Unimplemented for now
-        // Might be unneeded, depends on how MudBlazor handles Localization
-        return text;
-    }
-
     public virtual bool TryValidateInitializationValues() {
         bool isCurrentFieldInvalid;
         bool isAnyFieldInvalid = false;
@@ -62,36 +56,53 @@
             return false;
         }
 
-        if(isCurrentFieldInvalid = AuthenticationStateTask is null)
-            LogNullRequiredField(nameof(AuthenticationStateTask));
-        isAnyFieldInvalid &= isCurrentFieldInvalid;
+        List<(object obj, string name)> objects = new() {
+            { new(AuthenticationStateTask, nameof(AuthenticationStateTask)) },
+            { new(SignInManager, nameof(SignInManager)) },
+            { new(Snackbar, nameof(Snackbar)) },
+            { new(DialogService, nameof(DialogService)) },
+            { new(Local, nameof(Local)) }
+        };
 
-        if(isCurrentFieldInvalid = SignInManager is null)
-            LogNullRequiredField(nameof(SignInManager));
-        isAnyFieldInvalid &= isCurrentFieldInvalid;
-
-        if(isCurrentFieldInvalid = Snackbar is null)
-            LogNullRequiredField(nameof(Snackbar));
-        isAnyFieldInvalid &= isCurrentFieldInvalid;
-
-        if(isCurrentFieldInvalid = DialogService is null)
-            LogNullRequiredField(nameof(DialogService));
-        isAnyFieldInvalid &= isCurrentFieldInvalid;
-
-        if(isCurrentFieldInvalid = Local is null)
-            LogNullRequiredField(nameof(Local));
-        isAnyFieldInvalid &= isCurrentFieldInvalid;
+        foreach(var obj in objects) {
+            if(isCurrentFieldInvalid = obj.obj is null) {
+                Logger.LogCritical("Required Base Component field '{name}' has no set value.", obj.name);
+            }
+            isAnyFieldInvalid &= isCurrentFieldInvalid;
+        }
 
         return isAnyFieldInvalid;
-    }
-
-    protected void LogNullRequiredField(string fieldName) {
-        Logger.LogCritical("Required Base Component field '{fieldName}' has no set value.", fieldName);
     }
 
     protected override bool ShouldRender() {
         // Prevent Null exception when an async method invokes StateHasChanged() after the component has been disposed of
         return base.ShouldRender() && !_disposed;
+    }
+
+    public IDialogReference? ShowDialog<TDialog>(string title, bool fullScreen, DialogParameters? parameters = null) where TDialog : ComponentBase {
+        DialogOptions options = new() {
+                CloseButton = true,
+				CloseOnEscapeKey = true,
+				FullScreen = fullScreen,
+				FullWidth = fullScreen,
+                MaxWidth = MaxWidth.ExtraLarge
+			};
+
+        var dialog = DialogService.Show<TDialog>("Materials", parameters, options);
+        return dialog;
+    }
+
+    public IDialogReference? ShowDialog<TDialog>(string title, MaxWidth maxWidth = MaxWidth.Large, DialogParameters? parameters = null) where TDialog : ComponentBase {
+        DialogOptions options = new() {
+                CloseButton = true,
+				CloseOnEscapeKey = true,
+				FullScreen = false,
+				FullWidth = true,
+                MaxWidth = maxWidth
+			};
+
+        var dialog = DialogService.Show<TDialog>("Materials", parameters, options);
+        return dialog;
     }
 
     public void Dispose() {

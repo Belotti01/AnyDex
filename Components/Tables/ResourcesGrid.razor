@@ -1,11 +1,11 @@
 ﻿@inherits ResourcesTable
 
 <_MudWrap Type="MudWrapType.Primary">
-    @if(_isLoading || Resources is null) {
+    @if(_isLoading || Materials is null) {
 		<MudProgressLinear Indeterminate/>
     }else {
         <_MudGridTemplate Type="GridType.Dense">
-            @foreach(var resource in Resources) {
+            @foreach(var resource in Materials) {
                 <_MudItemTemplate Type="GridType.Dense">
                     <ResourceCard Resource="resource">
                         <Actions>

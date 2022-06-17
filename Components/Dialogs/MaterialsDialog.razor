@@ -1,0 +1,12 @@
+﻿<MudDialog DisableSidePadding="true" >
+	<DialogContent>
+		<MaterialsGrid Materials="Materials"/>
+	</DialogContent>
+</MudDialog>
+
+@code {
+	[CascadingParameter, NotNull] 
+	MudDialogInstance? MudDialog { get; set; }
+	[Parameter, Required, NotNull]
+	public IEnumerable<Material>? Materials { get; set; }
+}

@@ -1,0 +1,67 @@
+﻿@inherits BaseDbComponent<MaterialCard>
+
+<_MudWrap Type="MudWrapType.Secondary">
+    <MudCardHeader>
+        <CardHeaderContent>
+            <MudText Typo="Typo.h6">@Material.Title</MudText>
+            <MudText Typo="Typo.caption" Class="mt-0 d-block" Color="Color.Surface">@Material.Owner</MudText>
+        </CardHeaderContent>
+    </MudCardHeader>
+    <MudCardContent>
+        <MudContainer>
+                <MudText>
+                    Type: @Local[Material.Type.ToText()]<br />
+                    <AuthorizeView>
+                        <Authorized>
+                            Progress: @GetProgressText()<br />
+                        </Authorized>
+                        <NotAuthorized>
+                            Length: @Material.Length<br />
+                        </NotAuthorized>
+                    </AuthorizeView>
+                    Release Date: @(Material.ReleaseDate == default ? Local["Unknown"] : Material.ReleaseDate)<br />
+                </MudText>
+        </MudContainer>
+        <br />
+        @if(!string.IsNullOrWhiteSpace(Material.Description)) {
+            <MudText Class="d-block" Typo="Typo.body1" Color="Color.Surface">Description:</MudText>
+            <MudText Typo="Typo.body2" Style="overflow-wrap: break-word;" Class="text-wrap text-break">
+                @Material.Description
+            </MudText>
+        }
+        <div class="mb-0 d-block">
+                <MudText Typo="Typo.h6">@(Local["Links"]):</MudText>
+                <MudList Dense>
+                    @foreach(MaterialLink link in Material.MaterialLinks) {
+                        <MudListItem>
+                            <MudLink Href="@link.Link">@link.Description</MudLink>
+                        </MudListItem>
+                    }
+                </MudList>
+        </div>
+    </MudCardContent>
+</_MudWrap>
+
+@code {
+    [Parameter]
+    public RenderFragment? Actions { get; set; }
+    [Parameter, Required, NotNull]
+    public Material? Material { get; set; }
+
+    protected User? CurrentUser { get; set; }
+
+    protected override async Task OnInitializedAsync() {
+        await base.OnInitializedAsync();
+        CurrentUser = await GetCurrentUserAsync();
+    }
+
+    protected string GetProgressText() {
+        if(CurrentUser is null)
+			return Material.Length.ToString();
+
+		Progress? progress = CurrentUser.Progresses.FirstOrDefault(x => x.MaterialId == Material.Id);
+		uint progressValue = progress?.Value ?? 0;
+
+		return $"{progressValue}/{Material.Length}";
+	}
+}

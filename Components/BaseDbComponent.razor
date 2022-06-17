@@ -32,18 +32,4 @@
 #endif
 		return user;
 	}
-
-	public override bool TryValidateInitializationValues() {
-		bool isAnyFieldInvalid = false;
-		bool isCurrentFieldInvalid;
-		if(Logger is null) return false;	// Can't log errors. 
-											// Done after calling the overrided method to properly handle Logger null value in 
-											// the base method.
-
-											
-		if(isCurrentFieldInvalid = DbContextFactory is null)
-			LogNullRequiredField(nameof(DbContextFactory));
-		isAnyFieldInvalid &= isCurrentFieldInvalid;
-		return isAnyFieldInvalid;
-	}
 }

@@ -1,0 +1,20 @@
+﻿<MudSelect SelectedValuesChanged="@((IEnumerable<string> x) => OnSelectedValuesChanged(x))" MultiSelection="false" Class="@Class">
+	@foreach(var language in Languages.All) {
+		<MudSelectItem Value="@language.Code">@language.Text</MudSelectItem>
+	}
+</MudSelect>
+
+@code {
+	[Parameter]
+	public string? Value { get; set; }
+	[Parameter]
+	public string Class { get; set; } = "";
+	[Parameter]
+	public EventCallback<string?> ValueChanged { get; set; }
+
+	public async Task OnSelectedValuesChanged(IEnumerable<string?> values) {
+		if(ValueChanged.HasDelegate) {
+			await ValueChanged.InvokeAsync(values.FirstOrDefault());
+		}
+	}
+}

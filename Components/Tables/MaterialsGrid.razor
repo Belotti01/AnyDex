@@ -1,0 +1,40 @@
+﻿@inherits MaterialsTable
+
+<_MudWrap Type="MudWrapType.Primary">
+    @if(_isLoading || Materials is null) {
+		<MudProgressLinear Indeterminate/>
+    }else if(!Materials.Any()) {
+        <_NotFoundMessage Message="@Local["No Materials Found"]" />
+    }else {
+        <MudGrid Justify="Justify.Center">
+            <_MudItemTemplate Sizes="new int[] { 11, 11, 3, 3, 3, 2 }">
+                @foreach(Material material in Materials) {
+                    <MudNavMenu Dense>
+                        <MudNavLink OnClick="() => CurrentMaterial = material">
+                            @material.Title
+                        </MudNavLink>
+                    </MudNavMenu>
+                }
+            </_MudItemTemplate>
+            <_MudItemTemplate Sizes="new int[] { 11, 11, 8, 8, 8, 9 }">
+                @if(CurrentMaterial is not null) {
+                    <MudSpacer />
+                    <MaterialCard Material="CurrentMaterial"/>
+                    <MudSpacer />
+                }
+            </_MudItemTemplate>
+        </MudGrid>
+    }
+</_MudWrap>
+@code {
+    protected Material? CurrentMaterial;
+    protected const string IMAGE_PLACEHOLDER = "https://www.autospuitbedrijfkuperus.nl/wp-content/uploads/2017/08/placeholder-300x185.gif";
+
+    [Parameter]
+    public bool Editable { get; set; } = false;
+
+    protected override void OnInitialized() {
+        base.OnInitialized();
+        CurrentMaterial = Materials?.FirstOrDefault();
+    }
+}
