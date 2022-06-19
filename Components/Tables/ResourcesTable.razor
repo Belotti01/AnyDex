@@ -76,7 +76,7 @@
 	public User? CurrentUser { get; set; }
 
 	public string? CurrentResourceTitle { get; protected set; }
-	protected SortedSet<ulong>? _bookmarkedResourceIds;
+	protected SortedSet<int>? _bookmarkedResourceIds;
 	protected int _currentTabIndex = 0;
 	protected ulong _currentMaterialResourceId = 0;
 	protected BookmarkManager? _bookmarkManager;

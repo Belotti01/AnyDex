@@ -4,6 +4,7 @@ using AnyDexDB;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
@@ -17,30 +18,34 @@ namespace AnyDex.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "6.0.6")
-                .HasAnnotation("Relational:MaxIdentifierLength", 64);
+                .HasAnnotation("Relational:MaxIdentifierLength", 63);
+
+            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("AnyDexDB.Tables.AccountAction", b =>
                 {
-                    b.Property<ulong>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint unsigned");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("Date")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Ip")
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<string>("Location")
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("varchar(64)");
+                        .HasColumnType("character varying(64)");
 
-                    b.Property<ulong>("UserId")
-                        .HasColumnType("bigint unsigned");
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -51,18 +56,20 @@ namespace AnyDex.Migrations
 
             modelBuilder.Entity("AnyDexDB.Tables.Bookmark", b =>
                 {
-                    b.Property<ulong>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint unsigned");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("Date")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("timestamp without time zone");
 
-                    b.Property<ulong>("ResourceId")
-                        .HasColumnType("bigint unsigned");
+                    b.Property<int>("ResourceId")
+                        .HasColumnType("integer");
 
-                    b.Property<ulong>("UserId")
-                        .HasColumnType("bigint unsigned");
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -75,17 +82,19 @@ namespace AnyDex.Migrations
 
             modelBuilder.Entity("AnyDexDB.Tables.Category", b =>
                 {
-                    b.Property<ulong>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint unsigned");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -94,25 +103,27 @@ namespace AnyDex.Migrations
 
             modelBuilder.Entity("AnyDexDB.Tables.CategoryRating", b =>
                 {
-                    b.Property<ulong>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint unsigned");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<byte>("Rating")
-                        .HasColumnType("tinyint unsigned");
+                        .HasColumnType("smallint");
 
-                    b.Property<ulong?>("ResourceId")
-                        .HasColumnType("bigint unsigned");
+                    b.Property<int?>("ResourceId")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Review")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
-                    b.Property<ulong>("TargetId")
-                        .HasColumnType("bigint unsigned");
+                    b.Property<int>("TargetId")
+                        .HasColumnType("integer");
 
-                    b.Property<ulong>("UserId")
-                        .HasColumnType("bigint unsigned");
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -127,20 +138,22 @@ namespace AnyDex.Migrations
 
             modelBuilder.Entity("AnyDexDB.Tables.LearningPath", b =>
                 {
-                    b.Property<ulong>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint unsigned");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
-                    b.Property<ulong>("UserId")
-                        .HasColumnType("bigint unsigned");
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -151,23 +164,25 @@ namespace AnyDex.Migrations
 
             modelBuilder.Entity("AnyDexDB.Tables.LearningStep", b =>
                 {
-                    b.Property<ulong>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint unsigned");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
-                    b.Property<ulong>("LearningPathId")
-                        .HasColumnType("bigint unsigned");
+                    b.Property<int>("LearningPathId")
+                        .HasColumnType("integer");
 
-                    b.Property<ulong>("ResourceId")
-                        .HasColumnType("bigint unsigned");
+                    b.Property<int>("ResourceId")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -180,32 +195,34 @@ namespace AnyDex.Migrations
 
             modelBuilder.Entity("AnyDexDB.Tables.Material", b =>
                 {
-                    b.Property<ulong>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint unsigned");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
-                    b.Property<uint>("Length")
-                        .HasColumnType("int unsigned");
+                    b.Property<long>("Length")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("Owner")
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<DateTime?>("ReleaseDate")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("timestamp without time zone");
 
-                    b.Property<ulong>("ResourceId")
-                        .HasColumnType("bigint unsigned");
+                    b.Property<int>("ResourceId")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<int>("Type")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -216,31 +233,33 @@ namespace AnyDex.Migrations
 
             modelBuilder.Entity("AnyDexDB.Tables.MaterialComment", b =>
                 {
-                    b.Property<ulong>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint unsigned");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Content")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<bool>("IsHidden")
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("boolean");
 
                     b.Property<bool>("IsNsfw")
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("boolean");
 
                     b.Property<bool>("IsSpoiler")
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("boolean");
 
-                    b.Property<ulong>("ParentCommentId")
-                        .HasColumnType("bigint unsigned");
+                    b.Property<int>("ParentCommentId")
+                        .HasColumnType("integer");
 
-                    b.Property<ulong>("TargetId")
-                        .HasColumnType("bigint unsigned");
+                    b.Property<int>("TargetId")
+                        .HasColumnType("integer");
 
-                    b.Property<ulong>("UserId")
-                        .HasColumnType("bigint unsigned");
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -255,23 +274,25 @@ namespace AnyDex.Migrations
 
             modelBuilder.Entity("AnyDexDB.Tables.MaterialLink", b =>
                 {
-                    b.Property<ulong>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint unsigned");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<string>("Link")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
-                    b.Property<ulong>("MaterialId")
-                        .HasColumnType("bigint unsigned");
+                    b.Property<int>("MaterialId")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime?>("ReleaseDate")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("timestamp without time zone");
 
                     b.HasKey("Id");
 
@@ -282,22 +303,24 @@ namespace AnyDex.Migrations
 
             modelBuilder.Entity("AnyDexDB.Tables.MaterialRating", b =>
                 {
-                    b.Property<ulong>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint unsigned");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<byte>("Rating")
-                        .HasColumnType("tinyint unsigned");
+                        .HasColumnType("smallint");
 
                     b.Property<string>("Review")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
-                    b.Property<ulong>("TargetId")
-                        .HasColumnType("bigint unsigned");
+                    b.Property<int>("TargetId")
+                        .HasColumnType("integer");
 
-                    b.Property<ulong>("UserId")
-                        .HasColumnType("bigint unsigned");
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -310,26 +333,28 @@ namespace AnyDex.Migrations
 
             modelBuilder.Entity("AnyDexDB.Tables.Notification", b =>
                 {
-                    b.Property<ulong>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint unsigned");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("Date")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<string>("Link")
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
-                    b.Property<ulong>("UserId")
-                        .HasColumnType("bigint unsigned");
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -340,31 +365,33 @@ namespace AnyDex.Migrations
 
             modelBuilder.Entity("AnyDexDB.Tables.Progress", b =>
                 {
-                    b.Property<ulong>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint unsigned");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime?>("EndDate")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<bool?>("IsPrivate")
                         .IsRequired()
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("boolean");
 
-                    b.Property<ulong>("MaterialId")
-                        .HasColumnType("bigint unsigned");
+                    b.Property<int>("MaterialId")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime?>("StartDate")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<int>("Status")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    b.Property<ulong>("UserId")
-                        .HasColumnType("bigint unsigned");
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
 
-                    b.Property<uint>("Value")
-                        .HasColumnType("int unsigned");
+                    b.Property<long>("Value")
+                        .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
@@ -377,31 +404,33 @@ namespace AnyDex.Migrations
 
             modelBuilder.Entity("AnyDexDB.Tables.Quiz", b =>
                 {
-                    b.Property<ulong>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint unsigned");
+                        .HasColumnType("integer");
 
-                    b.Property<ulong>("CreatorId")
-                        .HasColumnType("bigint unsigned");
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CreatorId")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<bool?>("IsPublic")
                         .IsRequired()
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("boolean");
 
                     b.Property<string>("LanguageCode")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("ReleaseDate")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -412,20 +441,22 @@ namespace AnyDex.Migrations
 
             modelBuilder.Entity("AnyDexDB.Tables.QuizAnswer", b =>
                 {
-                    b.Property<ulong>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint unsigned");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Answer")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<bool?>("IsCorrect")
                         .IsRequired()
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("boolean");
 
-                    b.Property<ulong>("QuizQuestionId")
-                        .HasColumnType("bigint unsigned");
+                    b.Property<int>("QuizQuestionId")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -436,31 +467,33 @@ namespace AnyDex.Migrations
 
             modelBuilder.Entity("AnyDexDB.Tables.QuizComment", b =>
                 {
-                    b.Property<ulong>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint unsigned");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Content")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<bool>("IsHidden")
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("boolean");
 
                     b.Property<bool>("IsNsfw")
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("boolean");
 
                     b.Property<bool>("IsSpoiler")
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("boolean");
 
-                    b.Property<ulong>("ParentCommentId")
-                        .HasColumnType("bigint unsigned");
+                    b.Property<int>("ParentCommentId")
+                        .HasColumnType("integer");
 
-                    b.Property<ulong>("TargetId")
-                        .HasColumnType("bigint unsigned");
+                    b.Property<int>("TargetId")
+                        .HasColumnType("integer");
 
-                    b.Property<ulong>("UserId")
-                        .HasColumnType("bigint unsigned");
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -475,26 +508,28 @@ namespace AnyDex.Migrations
 
             modelBuilder.Entity("AnyDexDB.Tables.QuizQuestion", b =>
                 {
-                    b.Property<ulong>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint unsigned");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Hint")
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<string>("ImageUrl")
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<bool?>("IsDisabled")
                         .IsRequired()
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Question")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
-                    b.Property<ulong>("QuizId")
-                        .HasColumnType("bigint unsigned");
+                    b.Property<int>("QuizId")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -505,22 +540,24 @@ namespace AnyDex.Migrations
 
             modelBuilder.Entity("AnyDexDB.Tables.QuizRating", b =>
                 {
-                    b.Property<ulong>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint unsigned");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<byte>("Rating")
-                        .HasColumnType("tinyint unsigned");
+                        .HasColumnType("smallint");
 
                     b.Property<string>("Review")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
-                    b.Property<ulong>("TargetId")
-                        .HasColumnType("bigint unsigned");
+                    b.Property<int>("TargetId")
+                        .HasColumnType("integer");
 
-                    b.Property<ulong>("UserId")
-                        .HasColumnType("bigint unsigned");
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -533,21 +570,23 @@ namespace AnyDex.Migrations
 
             modelBuilder.Entity("AnyDexDB.Tables.QuizResult", b =>
                 {
-                    b.Property<ulong>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint unsigned");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("Date")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("timestamp without time zone");
 
-                    b.Property<ulong>("QuizId")
-                        .HasColumnType("bigint unsigned");
+                    b.Property<int>("QuizId")
+                        .HasColumnType("integer");
 
                     b.Property<byte>("Score")
-                        .HasColumnType("tinyint unsigned");
+                        .HasColumnType("smallint");
 
-                    b.Property<ulong>("UserId")
-                        .HasColumnType("bigint unsigned");
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -560,32 +599,34 @@ namespace AnyDex.Migrations
 
             modelBuilder.Entity("AnyDexDB.Tables.Resource", b =>
                 {
-                    b.Property<ulong>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint unsigned");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Creator")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<string>("ImageUrl")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<DateTime?>("ReleaseDate")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Summary")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -594,31 +635,33 @@ namespace AnyDex.Migrations
 
             modelBuilder.Entity("AnyDexDB.Tables.ResourceComment", b =>
                 {
-                    b.Property<ulong>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint unsigned");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Content")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<bool>("IsHidden")
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("boolean");
 
                     b.Property<bool>("IsNsfw")
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("boolean");
 
                     b.Property<bool>("IsSpoiler")
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("boolean");
 
-                    b.Property<ulong>("ParentCommentId")
-                        .HasColumnType("bigint unsigned");
+                    b.Property<int>("ParentCommentId")
+                        .HasColumnType("integer");
 
-                    b.Property<ulong>("TargetId")
-                        .HasColumnType("bigint unsigned");
+                    b.Property<int>("TargetId")
+                        .HasColumnType("integer");
 
-                    b.Property<ulong>("UserId")
-                        .HasColumnType("bigint unsigned");
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -633,15 +676,17 @@ namespace AnyDex.Migrations
 
             modelBuilder.Entity("AnyDexDB.Tables.ResourceQuiz", b =>
                 {
-                    b.Property<ulong>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint unsigned");
+                        .HasColumnType("integer");
 
-                    b.Property<ulong>("QuizId")
-                        .HasColumnType("bigint unsigned");
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<ulong>("ResourceId")
-                        .HasColumnType("bigint unsigned");
+                    b.Property<int>("QuizId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ResourceId")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -654,22 +699,24 @@ namespace AnyDex.Migrations
 
             modelBuilder.Entity("AnyDexDB.Tables.ResourceRating", b =>
                 {
-                    b.Property<ulong>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint unsigned");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<byte>("Rating")
-                        .HasColumnType("tinyint unsigned");
+                        .HasColumnType("smallint");
 
                     b.Property<string>("Review")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
-                    b.Property<ulong>("TargetId")
-                        .HasColumnType("bigint unsigned");
+                    b.Property<int>("TargetId")
+                        .HasColumnType("integer");
 
-                    b.Property<ulong>("UserId")
-                        .HasColumnType("bigint unsigned");
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -682,18 +729,20 @@ namespace AnyDex.Migrations
 
             modelBuilder.Entity("AnyDexDB.Tables.ResourceRelation", b =>
                 {
-                    b.Property<ulong>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint unsigned");
+                        .HasColumnType("integer");
 
-                    b.Property<ulong>("RelatedResourceId")
-                        .HasColumnType("bigint unsigned");
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<ulong>("ResourceId")
-                        .HasColumnType("bigint unsigned");
+                    b.Property<int>("RelatedResourceId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ResourceId")
+                        .HasColumnType("integer");
 
                     b.Property<byte>("Type")
-                        .HasColumnType("tinyint unsigned");
+                        .HasColumnType("smallint");
 
                     b.HasKey("Id");
 
@@ -706,21 +755,23 @@ namespace AnyDex.Migrations
 
             modelBuilder.Entity("AnyDexDB.Tables.Role", b =>
                 {
-                    b.Property<ulong>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint unsigned");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<string>("Name")
                         .HasMaxLength(256)
-                        .HasColumnType("varchar(256)");
+                        .HasColumnType("character varying(256)");
 
                     b.Property<string>("NormalizedName")
                         .HasMaxLength(256)
-                        .HasColumnType("varchar(256)");
+                        .HasColumnType("character varying(256)");
 
                     b.HasKey("Id");
 
@@ -735,16 +786,18 @@ namespace AnyDex.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ClaimType")
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<string>("ClaimValue")
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
-                    b.Property<ulong>("RoleId")
-                        .HasColumnType("bigint unsigned");
+                    b.Property<int>("RoleId")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -755,75 +808,77 @@ namespace AnyDex.Migrations
 
             modelBuilder.Entity("AnyDexDB.Tables.User", b =>
                 {
-                    b.Property<ulong>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint unsigned");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int>("AccessFailedCount")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<string>("Bio")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("varchar(1000)");
+                        .HasColumnType("character varying(1000)");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<string>("Email")
                         .HasMaxLength(256)
-                        .HasColumnType("varchar(256)");
+                        .HasColumnType("character varying(256)");
 
                     b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("boolean");
 
                     b.Property<string>("FullName")
                         .HasMaxLength(255)
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("character varying(255)");
 
                     b.Property<string>("Location")
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<bool>("LockoutEnabled")
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("boolean");
 
                     b.Property<DateTimeOffset?>("LockoutEnd")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
-                        .HasColumnType("varchar(256)");
+                        .HasColumnType("character varying(256)");
 
                     b.Property<string>("NormalizedUserName")
                         .HasMaxLength(256)
-                        .HasColumnType("varchar(256)");
+                        .HasColumnType("character varying(256)");
 
                     b.Property<string>("PasswordHash")
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<string>("PhoneNumber")
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<bool>("PhoneNumberConfirmed")
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("boolean");
 
                     b.Property<string>("ProfilePicture")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<string>("SecurityStamp")
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<bool>("TwoFactorEnabled")
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("boolean");
 
                     b.Property<string>("UserName")
                         .HasMaxLength(256)
-                        .HasColumnType("varchar(256)");
+                        .HasColumnType("character varying(256)");
 
                     b.Property<DateTime>("UtcRegistrationDate")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("timestamp without time zone");
 
                     b.HasKey("Id");
 
@@ -841,16 +896,18 @@ namespace AnyDex.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ClaimType")
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<string>("ClaimValue")
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
-                    b.Property<ulong>("UserId")
-                        .HasColumnType("bigint unsigned");
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -862,16 +919,16 @@ namespace AnyDex.Migrations
             modelBuilder.Entity("AnyDexDB.Tables.UserLogin", b =>
                 {
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("text");
 
                     b.Property<string>("ProviderKey")
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("text");
 
                     b.Property<string>("ProviderDisplayName")
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
-                    b.Property<ulong>("UserId")
-                        .HasColumnType("bigint unsigned");
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
 
                     b.HasKey("LoginProvider", "ProviderKey");
 
@@ -882,11 +939,11 @@ namespace AnyDex.Migrations
 
             modelBuilder.Entity("AnyDexDB.Tables.UserRole", b =>
                 {
-                    b.Property<ulong>("UserId")
-                        .HasColumnType("bigint unsigned");
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
 
-                    b.Property<ulong>("RoleId")
-                        .HasColumnType("bigint unsigned");
+                    b.Property<int>("RoleId")
+                        .HasColumnType("integer");
 
                     b.HasKey("UserId", "RoleId");
 
@@ -897,17 +954,17 @@ namespace AnyDex.Migrations
 
             modelBuilder.Entity("AnyDexDB.Tables.UserToken", b =>
                 {
-                    b.Property<ulong>("UserId")
-                        .HasColumnType("bigint unsigned");
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
 
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("text");
 
                     b.Property<string>("Name")
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("text");
 
                     b.Property<string>("Value")
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 

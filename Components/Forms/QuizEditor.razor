@@ -43,7 +43,7 @@
 	public QuizQuestion? CurrentQuestion => _currentQuestionId == 0
 		? null
 		: Quiz.QuizQuestions.FirstOrDefault(x => x.Id == _currentQuestionId);
-	protected ulong _currentQuestionId = 0;
+	protected int _currentQuestionId = 0;
 
 
 	

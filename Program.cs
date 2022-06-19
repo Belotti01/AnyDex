@@ -5,7 +5,12 @@ using MudBlazor.Services;
 using System.Diagnostics;
 
 namespace AnyDex {
+
 	public static class Program {
+
+		public const string POSTGRE_CONNECTION_STRING_ALIAS = "PostGre";
+
+		public static readonly bool USE_POSTGRE = true;
 		private const bool RELOAD_DB_DATA = false;
 
 		private static IConfiguration? _configuration;
@@ -15,20 +20,20 @@ namespace AnyDex {
 			Console.ForegroundColor = ConsoleColor.Cyan;
 
 			string separatorLine = new('-', 50);
-			string connectionStringAlias = "MainConnection";
+			string connectionStringAlias = POSTGRE_CONNECTION_STRING_ALIAS;
+
 			WebApplication app;
 			WebApplicationBuilder builder;
 			string connectionString = _configuration.GetConnectionString(connectionStringAlias);
-			ServerVersion dbServerVersion = ServerVersion.AutoDetect(connectionString);
 			Console.WriteLine(separatorLine);
-			PrintStartupInformation(connectionStringAlias, dbServerVersion);
+			PrintStartupInformation(connectionStringAlias);
 			Console.WriteLine(separatorLine);
 
 			Console.Write("Creating WebApplication Builder...");
 			builder = WebApplication.CreateBuilder(args);
 			Console.WriteLine(" Done");
 			Console.Write("Configuring WebApplication Services...");
-			AddServices(builder, connectionString, dbServerVersion);
+			AddServices(builder, connectionString);
 			ConfigureIdentity(builder);
 			ConfigureLogging(builder);
 			Console.WriteLine(" Done");
@@ -54,12 +59,11 @@ namespace AnyDex {
 			app.Run();
 		}
 
-		private static void PrintStartupInformation(string connectionStringAlias, ServerVersion dbServerVersion) {
+		private static void PrintStartupInformation(string connectionStringAlias) {
 			Console.Title = $"AnyDex v{Environment.Version}";
 
 			// Log startup information
 			Console.WriteLine($"Running on {Environment.OSVersion.VersionString}");
-			Console.WriteLine($"Database Server Version: {dbServerVersion}");
 			Console.WriteLine($"Using connection string \"{connectionStringAlias}\"");
 		}
 
@@ -100,7 +104,7 @@ namespace AnyDex {
 			app.UseRequestLocalization(localizationOptions);
 		}
 
-		private static void AddServices(WebApplicationBuilder builder, string connectionString, ServerVersion serverVersion) {
+		private static void AddServices(WebApplicationBuilder builder, string connectionString) {
 			builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 			builder.Services.AddRazorPages();
 			builder.Services.AddServerSideBlazor();
@@ -123,10 +127,12 @@ namespace AnyDex {
 				options => options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true
 			);
 			// Inject DbContextFactory
-			builder.Services.AddDbContextFactory<AnyDexDb>(options => {
+			// POSTGRESQL SETUP
+			builder.Services.AddEntityFrameworkNpgsql().AddDbContextFactory<AnyDexDb>(options => {
 				options.UseLazyLoadingProxies(true);
-				options.UseMySql(connectionString, serverVersion);
+				options.UseNpgsql(connectionString);
 			});
+			AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 			// Enable Localization
 			builder.Services.AddLocalization();
 			// Inject DateTime Client Time Zone converter
