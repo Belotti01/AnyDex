@@ -9,15 +9,21 @@
 					 Filterable
 					 Sortable
 					 Loading="_isLoading"
-					 RowsPerPage="15">
+					 RowsPerPage="15"
+					 ReadOnly="false"
+					 EditDialogOptions="new() {NoHeader=true}"
+					 EditMode="DataGridEditMode.Form"
+					 EditTrigger="DataGridEditTrigger.OnRowClick">
 				<Columns>
 					<Column T="Material" Field="@nameof(Material.Title)" Title="@Local["Title"]" Groupable="true"/>
 					<Column T="Material" Field="@nameof(Material.Owner)" Title="@Local["Creator"]" Groupable="true"/>
-					<Column T="Material" Field="@nameof(Material.ReleaseDate)" Title="@Local["ReleaseDate"]" Hideable="true"/>
+					<Column T="Material" Context="column" Field="@nameof(Material.ReleaseDate)" Title="@Local["ReleaseDate"]" Hideable="true">
+						<CellTemplate>@(column.Item.ReleaseDate.HasValue ? column.Item.ReleaseDate.Value.ToString("dd/MM/yyyy") : "")</CellTemplate>	
+						<EditTemplate><_MudDatePicker @bind-Date="column.Item.ReleaseDate" Label="@Local["ReleaseDate"]"/></EditTemplate>
+					</Column>
 					<Column T="Material" Context="column" Sortable="false" Hideable="true" Title="@Local["Type"]" >
-						<CellTemplate>
-							@Local[column.Item.Type.ToText()]
-						</CellTemplate>
+						<CellTemplate>@Local[column.Item.Type.ToText()]</CellTemplate>
+						<EditTemplate><MudMaterialTypeComboBox @bind-Value="@column.Item.Type" /></EditTemplate>
 					</Column>
 				
 					<!-- Show the LENGTH field, plus the progress alongside of it if the user is logged in -->
@@ -27,12 +33,22 @@
 								<CellTemplate>
 									@Local[GetProgressText(column.Item)]
 								</CellTemplate>
+								<EditTemplate>
+									<MudNumericField @bind-Value="@column.Item.Length" Label="@Local["Length"]" Variant="Variant.Outlined" />
+								</EditTemplate>
 							</Column>
 						</Authorized>
 						<NotAuthorized>
 							<Column T="Material" Field="@nameof(Material.Length)" Title="@Local["Length"]" Hideable="true" />
 						</NotAuthorized>
 					</AuthorizeView>
+				
+					<!-- Edit-Only Columns -->
+					<Column T="Material" Hidden="true" Hideable="false" Field="@nameof(Material.Description)" Context="column">
+						<EditTemplate>
+							<MudTextField Lines="8" @bind-Value="@column.Item.Description" Label="@Local["Description"]" Variant="Variant.Outlined"/>
+						</EditTemplate>
+					</Column>
 				</Columns>
 				<PagerContent>
 					<_MudGridPager TItem="Material"/>

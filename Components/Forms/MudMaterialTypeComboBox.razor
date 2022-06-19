@@ -1,0 +1,20 @@
+﻿@inherits BaseComponent<MudMaterialTypeComboBox>
+
+<MudSelect Label="@Local["Type"]" Variant="Variant.Outlined" Value="Value" SelectedValuesChanged="@((IEnumerable<MaterialType> x) => OnSelectedValuesChanged(x))" MultiSelection="false" Class="@Class">
+	@foreach(var type in Enum.GetValues<MaterialType>()) {
+		<MudSelectItem Value="@type">@Local[type.ToText()]</MudSelectItem>
+	}
+</MudSelect>
+
+@code {
+	[Parameter]
+	public MaterialType Value { get; set; }
+	[Parameter]
+	public EventCallback<MaterialType> ValueChanged { get; set; }
+
+	public async Task OnSelectedValuesChanged(IEnumerable<MaterialType> values) {
+		if(ValueChanged.HasDelegate) {
+			await ValueChanged.InvokeAsync(values.FirstOrDefault());
+		}
+	}
+}

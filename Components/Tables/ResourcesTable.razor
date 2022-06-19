@@ -47,6 +47,18 @@
 							</Column>
 						</Authorized>
 					</AuthorizeView>
+				
+					<!-- Edit-Only Columns -->
+					<Column T="Resource" Hidden="true" Hideable="false" Field="@nameof(Resource.Summary)" Context="column">
+						<EditTemplate>
+							<MudTextField Lines="8" @bind-Value="@column.Item.Summary" Label="@Local["Summary"]" Variant="Variant.Outlined"/>
+						</EditTemplate>
+					</Column>
+					<Column T="Resource" Hidden="true" Hideable="false" Field="@nameof(Resource.Description)" Context="column">
+						<EditTemplate>
+							<MudTextField Lines="8" @bind-Value="@column.Item.Description" Label="@Local["Description"]" Variant="Variant.Outlined"/>
+						</EditTemplate>
+					</Column>
 				</Columns>
 				<PagerContent>
 					<_MudGridPager TItem="Resource"/>
