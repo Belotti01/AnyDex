@@ -9,14 +9,19 @@
 					 Filterable
 					 Sortable
 					 Loading="_isLoading"
-					 RowsPerPage="15">
+					 RowsPerPage="15"
+					 ReadOnly="false"
+					 EditDialogOptions="new() {NoHeader=true}"
+					 EditMode="DataGridEditMode.Form"
+					 EditTrigger="DataGridEditTrigger.OnRowClick">
 				<Columns>
-					<Column T="Resource" Field="@nameof(Resource.Title)" Title="@Local["Title"]" Groupable="true"/>
+					<Column T="Resource" Field="@nameof(Resource.Title)" Title="@Local["Title"]" Groupable="true" Context="column" />
 					<Column T="Resource" Field="@nameof(Resource.Creator)" Title="@Local["Creator"]" Groupable="true"/>
 					<Column T="Resource" Context="column" Field="@nameof(Resource.ReleaseDate)" Title="@Local["ReleaseDate"]" Hideable="true">
 						<CellTemplate>@(column.Item.ReleaseDate.HasValue ? column.Item.ReleaseDate.Value.ToString("dd/MM/yyyy") : "")</CellTemplate>	
+						<EditTemplate><_MudDatePicker @bind-Date="column.Item.ReleaseDate" Label="@Local["ReleaseDate"]"/></EditTemplate>
 					</Column>
-					<Column T="Resource" Context="column" SortBy="x => x.Materials.Count" Hideable="true" Title="@Local["Materials"]" >
+					<Column T="Resource" Context="column" SortBy="x => x.Materials.Count" Hideable="true" Title="@Local["Materials"]" IsEditable="false">
 						<CellTemplate>
 							<MudButton EndIcon="@Icons.Material.Filled.MenuOpen" OnClick="(e) => OpenMaterialsDialog(column.Item)">
 								@column.Item.Materials.Count
@@ -26,13 +31,13 @@
 					<!-- Columns visible only by logged users -->
 					<AuthorizeView>
 						<Authorized>
-							<Column T="Resource" Context="column" Title="Status" Sortable="false" Groupable="true" GroupBy="x => GetUserProgressStatus(x)">
+							<Column T="Resource" Context="column" Title="Status" Sortable="false" Groupable="true" GroupBy="x => GetUserProgressStatus(x)" IsEditable="false">
 								<CellTemplate>
 									<MudIconButton Icon="@Icons.Material.Filled.Edit" />
 										@(GetUserProgressStatus(column.Item).ToText())
 								</CellTemplate>
 							</Column>
-							<Column T="Resource" Context="column" Title="" Sortable="false" >
+							<Column T="Resource" Context="column" Title="" Sortable="false" IsEditable="false">
 								<CellTemplate>
 									<MudToggleIconButton Toggled="_bookmarkedResourceIds?.Contains(column.Item.Id) ?? false"
 														 ToggledChanged="(bool newValue) => ToggleBookmark(column.Item)"

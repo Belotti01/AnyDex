@@ -16,7 +16,7 @@ namespace AnyDex.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.5")
+                .HasAnnotation("ProductVersion", "6.0.6")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             modelBuilder.Entity("AnyDexDB.Tables.AccountAction", b =>
@@ -32,7 +32,6 @@ namespace AnyDex.Migrations
                         .HasColumnType("longtext");
 
                     b.Property<string>("Location")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("Name")
@@ -99,13 +98,17 @@ namespace AnyDex.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint unsigned");
 
-                    b.Property<ulong>("CategoryId")
-                        .HasColumnType("bigint unsigned");
-
                     b.Property<byte>("Rating")
                         .HasColumnType("tinyint unsigned");
 
-                    b.Property<ulong>("ResourceId")
+                    b.Property<ulong?>("ResourceId")
+                        .HasColumnType("bigint unsigned");
+
+                    b.Property<string>("Review")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<ulong>("TargetId")
                         .HasColumnType("bigint unsigned");
 
                     b.Property<ulong>("UserId")
@@ -113,9 +116,9 @@ namespace AnyDex.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CategoryId");
-
                     b.HasIndex("ResourceId");
+
+                    b.HasIndex("TargetId");
 
                     b.HasIndex("UserId");
 
@@ -211,6 +214,45 @@ namespace AnyDex.Migrations
                     b.ToTable("material");
                 });
 
+            modelBuilder.Entity("AnyDexDB.Tables.MaterialComment", b =>
+                {
+                    b.Property<ulong>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint unsigned");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<bool>("IsHidden")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("IsNsfw")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("IsSpoiler")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<ulong>("ParentCommentId")
+                        .HasColumnType("bigint unsigned");
+
+                    b.Property<ulong>("TargetId")
+                        .HasColumnType("bigint unsigned");
+
+                    b.Property<ulong>("UserId")
+                        .HasColumnType("bigint unsigned");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ParentCommentId");
+
+                    b.HasIndex("TargetId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("material_comment");
+                });
+
             modelBuilder.Entity("AnyDexDB.Tables.MaterialLink", b =>
                 {
                     b.Property<ulong>("Id")
@@ -236,6 +278,34 @@ namespace AnyDex.Migrations
                     b.HasIndex("MaterialId");
 
                     b.ToTable("material_link");
+                });
+
+            modelBuilder.Entity("AnyDexDB.Tables.MaterialRating", b =>
+                {
+                    b.Property<ulong>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint unsigned");
+
+                    b.Property<byte>("Rating")
+                        .HasColumnType("tinyint unsigned");
+
+                    b.Property<string>("Review")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<ulong>("TargetId")
+                        .HasColumnType("bigint unsigned");
+
+                    b.Property<ulong>("UserId")
+                        .HasColumnType("bigint unsigned");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TargetId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("material_rating");
                 });
 
             modelBuilder.Entity("AnyDexDB.Tables.Notification", b =>
@@ -364,6 +434,45 @@ namespace AnyDex.Migrations
                     b.ToTable("quiz_answer");
                 });
 
+            modelBuilder.Entity("AnyDexDB.Tables.QuizComment", b =>
+                {
+                    b.Property<ulong>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint unsigned");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<bool>("IsHidden")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("IsNsfw")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("IsSpoiler")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<ulong>("ParentCommentId")
+                        .HasColumnType("bigint unsigned");
+
+                    b.Property<ulong>("TargetId")
+                        .HasColumnType("bigint unsigned");
+
+                    b.Property<ulong>("UserId")
+                        .HasColumnType("bigint unsigned");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ParentCommentId");
+
+                    b.HasIndex("TargetId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("quiz_comment");
+                });
+
             modelBuilder.Entity("AnyDexDB.Tables.QuizQuestion", b =>
                 {
                     b.Property<ulong>("Id")
@@ -400,18 +509,22 @@ namespace AnyDex.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint unsigned");
 
-                    b.Property<ulong>("QuizId")
-                        .HasColumnType("bigint unsigned");
-
                     b.Property<byte>("Rating")
                         .HasColumnType("tinyint unsigned");
+
+                    b.Property<string>("Review")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<ulong>("TargetId")
+                        .HasColumnType("bigint unsigned");
 
                     b.Property<ulong>("UserId")
                         .HasColumnType("bigint unsigned");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("QuizId");
+                    b.HasIndex("TargetId");
 
                     b.HasIndex("UserId");
 
@@ -443,30 +556,6 @@ namespace AnyDex.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("quiz_result");
-                });
-
-            modelBuilder.Entity("AnyDexDB.Tables.Rating", b =>
-                {
-                    b.Property<ulong>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint unsigned");
-
-                    b.Property<ulong>("ResourceId")
-                        .HasColumnType("bigint unsigned");
-
-                    b.Property<byte>("Score")
-                        .HasColumnType("tinyint unsigned");
-
-                    b.Property<ulong>("UserId")
-                        .HasColumnType("bigint unsigned");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ResourceId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("rating");
                 });
 
             modelBuilder.Entity("AnyDexDB.Tables.Resource", b =>
@@ -503,6 +592,45 @@ namespace AnyDex.Migrations
                     b.ToTable("resource");
                 });
 
+            modelBuilder.Entity("AnyDexDB.Tables.ResourceComment", b =>
+                {
+                    b.Property<ulong>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint unsigned");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<bool>("IsHidden")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("IsNsfw")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("IsSpoiler")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<ulong>("ParentCommentId")
+                        .HasColumnType("bigint unsigned");
+
+                    b.Property<ulong>("TargetId")
+                        .HasColumnType("bigint unsigned");
+
+                    b.Property<ulong>("UserId")
+                        .HasColumnType("bigint unsigned");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ParentCommentId");
+
+                    b.HasIndex("TargetId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("resource_comment");
+                });
+
             modelBuilder.Entity("AnyDexDB.Tables.ResourceQuiz", b =>
                 {
                     b.Property<ulong>("Id")
@@ -522,6 +650,34 @@ namespace AnyDex.Migrations
                     b.HasIndex("ResourceId");
 
                     b.ToTable("resource_quiz");
+                });
+
+            modelBuilder.Entity("AnyDexDB.Tables.ResourceRating", b =>
+                {
+                    b.Property<ulong>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint unsigned");
+
+                    b.Property<byte>("Rating")
+                        .HasColumnType("tinyint unsigned");
+
+                    b.Property<string>("Review")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<ulong>("TargetId")
+                        .HasColumnType("bigint unsigned");
+
+                    b.Property<ulong>("UserId")
+                        .HasColumnType("bigint unsigned");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TargetId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("resource_rating");
                 });
 
             modelBuilder.Entity("AnyDexDB.Tables.ResourceRelation", b =>
@@ -790,15 +946,13 @@ namespace AnyDex.Migrations
 
             modelBuilder.Entity("AnyDexDB.Tables.CategoryRating", b =>
                 {
-                    b.HasOne("AnyDexDB.Tables.Category", "Category")
+                    b.HasOne("AnyDexDB.Tables.Resource", null)
                         .WithMany("CategoryRatings")
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ResourceId");
 
-                    b.HasOne("AnyDexDB.Tables.Resource", "Resource")
+                    b.HasOne("AnyDexDB.Tables.Category", "Target")
                         .WithMany("CategoryRatings")
-                        .HasForeignKey("ResourceId")
+                        .HasForeignKey("TargetId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -808,9 +962,7 @@ namespace AnyDex.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Category");
-
-                    b.Navigation("Resource");
+                    b.Navigation("Target");
 
                     b.Navigation("User");
                 });
@@ -856,6 +1008,33 @@ namespace AnyDex.Migrations
                     b.Navigation("Resource");
                 });
 
+            modelBuilder.Entity("AnyDexDB.Tables.MaterialComment", b =>
+                {
+                    b.HasOne("AnyDexDB.Tables.MaterialComment", "ParentComment")
+                        .WithMany("ChildComments")
+                        .HasForeignKey("ParentCommentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("AnyDexDB.Tables.Quiz", "Target")
+                        .WithMany()
+                        .HasForeignKey("TargetId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("AnyDexDB.Tables.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ParentComment");
+
+                    b.Navigation("Target");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("AnyDexDB.Tables.MaterialLink", b =>
                 {
                     b.HasOne("AnyDexDB.Tables.Material", "Material")
@@ -865,6 +1044,25 @@ namespace AnyDex.Migrations
                         .IsRequired();
 
                     b.Navigation("Material");
+                });
+
+            modelBuilder.Entity("AnyDexDB.Tables.MaterialRating", b =>
+                {
+                    b.HasOne("AnyDexDB.Tables.Material", "Target")
+                        .WithMany("MaterialRatings")
+                        .HasForeignKey("TargetId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("AnyDexDB.Tables.User", "User")
+                        .WithMany("MaterialRatings")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Target");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("AnyDexDB.Tables.Notification", b =>
@@ -919,6 +1117,33 @@ namespace AnyDex.Migrations
                     b.Navigation("QuizQuestion");
                 });
 
+            modelBuilder.Entity("AnyDexDB.Tables.QuizComment", b =>
+                {
+                    b.HasOne("AnyDexDB.Tables.QuizComment", "ParentComment")
+                        .WithMany("ChildComments")
+                        .HasForeignKey("ParentCommentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("AnyDexDB.Tables.Quiz", "Target")
+                        .WithMany()
+                        .HasForeignKey("TargetId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("AnyDexDB.Tables.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ParentComment");
+
+                    b.Navigation("Target");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("AnyDexDB.Tables.QuizQuestion", b =>
                 {
                     b.HasOne("AnyDexDB.Tables.Quiz", "Quiz")
@@ -932,9 +1157,9 @@ namespace AnyDex.Migrations
 
             modelBuilder.Entity("AnyDexDB.Tables.QuizRating", b =>
                 {
-                    b.HasOne("AnyDexDB.Tables.Quiz", "Quiz")
+                    b.HasOne("AnyDexDB.Tables.Quiz", "Target")
                         .WithMany("QuizRatings")
-                        .HasForeignKey("QuizId")
+                        .HasForeignKey("TargetId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -944,7 +1169,7 @@ namespace AnyDex.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Quiz");
+                    b.Navigation("Target");
 
                     b.Navigation("User");
                 });
@@ -968,21 +1193,29 @@ namespace AnyDex.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("AnyDexDB.Tables.Rating", b =>
+            modelBuilder.Entity("AnyDexDB.Tables.ResourceComment", b =>
                 {
-                    b.HasOne("AnyDexDB.Tables.Resource", "Resource")
-                        .WithMany("Ratings")
-                        .HasForeignKey("ResourceId")
+                    b.HasOne("AnyDexDB.Tables.ResourceComment", "ParentComment")
+                        .WithMany("ChildComments")
+                        .HasForeignKey("ParentCommentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("AnyDexDB.Tables.Resource", "Target")
+                        .WithMany()
+                        .HasForeignKey("TargetId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("AnyDexDB.Tables.User", "User")
-                        .WithMany("Ratings")
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Resource");
+                    b.Navigation("ParentComment");
+
+                    b.Navigation("Target");
 
                     b.Navigation("User");
                 });
@@ -1004,6 +1237,25 @@ namespace AnyDex.Migrations
                     b.Navigation("Quiz");
 
                     b.Navigation("Resource");
+                });
+
+            modelBuilder.Entity("AnyDexDB.Tables.ResourceRating", b =>
+                {
+                    b.HasOne("AnyDexDB.Tables.Resource", "Target")
+                        .WithMany("ResourceRatings")
+                        .HasForeignKey("TargetId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("AnyDexDB.Tables.User", "User")
+                        .WithMany("ResourceRatings")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Target");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("AnyDexDB.Tables.ResourceRelation", b =>
@@ -1090,7 +1342,14 @@ namespace AnyDex.Migrations
                 {
                     b.Navigation("MaterialLinks");
 
+                    b.Navigation("MaterialRatings");
+
                     b.Navigation("Progresses");
+                });
+
+            modelBuilder.Entity("AnyDexDB.Tables.MaterialComment", b =>
+                {
+                    b.Navigation("ChildComments");
                 });
 
             modelBuilder.Entity("AnyDexDB.Tables.Quiz", b =>
@@ -1102,6 +1361,11 @@ namespace AnyDex.Migrations
                     b.Navigation("QuizResults");
 
                     b.Navigation("ResourceQuizzes");
+                });
+
+            modelBuilder.Entity("AnyDexDB.Tables.QuizComment", b =>
+                {
+                    b.Navigation("ChildComments");
                 });
 
             modelBuilder.Entity("AnyDexDB.Tables.QuizQuestion", b =>
@@ -1119,13 +1383,18 @@ namespace AnyDex.Migrations
 
                     b.Navigation("Materials");
 
-                    b.Navigation("Ratings");
-
                     b.Navigation("RelatedResources");
 
                     b.Navigation("RelatingResources");
 
                     b.Navigation("ResourceQuizzes");
+
+                    b.Navigation("ResourceRatings");
+                });
+
+            modelBuilder.Entity("AnyDexDB.Tables.ResourceComment", b =>
+                {
+                    b.Navigation("ChildComments");
                 });
 
             modelBuilder.Entity("AnyDexDB.Tables.User", b =>
@@ -1138,6 +1407,8 @@ namespace AnyDex.Migrations
 
                     b.Navigation("LearningPaths");
 
+                    b.Navigation("MaterialRatings");
+
                     b.Navigation("Notifications");
 
                     b.Navigation("Progresses");
@@ -1148,7 +1419,7 @@ namespace AnyDex.Migrations
 
                     b.Navigation("Quizzes");
 
-                    b.Navigation("Ratings");
+                    b.Navigation("ResourceRatings");
                 });
 #pragma warning restore 612, 618
         }

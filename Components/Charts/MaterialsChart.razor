@@ -16,10 +16,11 @@
 		_data = new ChartData<int>[types.Length];
 
 		for(int i = 0; i < types.Length; i++) {
+			int count = DbContext.Materials.Count(x => x.Type == types[i]); 
 			_data[i] = new(
-				DbContext.Materials.Count(x => x.Type == types[i]),
-				types[i].ToText(),
-				types[i].GetColor()
+				count,
+				$"{Local[types[i].ToText()]}: {count}",
+				types[i].GetHexColor()
 			);
 		}
 	}

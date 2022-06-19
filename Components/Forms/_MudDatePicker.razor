@@ -1,0 +1,23 @@
+﻿
+<MudDatePicker Class="my-2"
+			   Label="@Label" 
+			   Date="Date.HasValue ? Date.Value : default"
+			   DateChanged="OnDateChanged"
+			   AllowKeyboardInput="true" 
+			   Editable Variant="Variant.Outlined"/>
+
+@code {
+	[Parameter]
+	public string Label { get; set; } = "";
+	[NotNull, Parameter, Required]
+	public DateTime? Date { get; set; }
+	[Parameter]
+	public EventCallback<DateTime?> DateChanged { get; set; }
+
+	protected async Task OnDateChanged(DateTime? newValue) {
+		Date = newValue;
+		if(DateChanged.HasDelegate) {
+			await DateChanged.InvokeAsync(newValue);
+		}
+	}
+}

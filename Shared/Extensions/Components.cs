@@ -30,7 +30,7 @@
 		public static void AddInfo(this ISnackbar snackbar, string message)
 			=> snackbar.AddGeneric(message, Severity.Info);
 
-		public static string RandomIcon(this Filled material) {
+		public static string RandomIcon() {
 			int randomIndex = Random.Shared.Next(RandomIcons.Length);
 			string icon = RandomIcons[randomIndex];
 			return icon;

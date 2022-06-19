@@ -1,26 +1,45 @@
 ﻿@inherits BaseDbComponent<ResourceEditor>
 
-<AuthorizeView>
-	<Authorized>
-		<MudCard>
-			@if(Resource is null) {
-				<MudProgressLinear Indeterminate Class="w-100"/>
-			}else {
+@if(Resource is null || _isLoading) {
+	<_LoadingBar />
+}else {
+	<AuthorizeView Context="auth">
+		<Authorized>
+			<_MudWrap Type="MudWrapType.Primary">
 				<MudCardContent>
-					<MudForm Model="Resource">
-						<MudContainer MaxWidth="MaxWidth.Medium">
-						</MudContainer>
-					</MudForm>
+					<EditForm Model="Resource">
+						<DataAnnotationsValidator />
+
+						<_MudGridTemplate Type="GridType.Wide">
+							<!-- Top-Left Column -->
+							<_MudItemTemplate Sizes="new int[] {12, 11, 6}">
+								<ImageUrlInputField @bind-Value="@Resource.ImageUrl"/>
+							</_MudItemTemplate>
+
+							<!-- Top-Right Column -->
+							<_MudItemTemplate Sizes="new int[] {12, 11, 6}">
+								<MudStack AlignItems="AlignItems.Center"
+										  Spacing="2"
+										  Justify="Justify.Center">
+									<MudInput @bind-Value="@Resource.Title" 
+											  Label="@Local["Title"]" />
+									<MudInput @bind-Value="@Resource.Summary" 
+											  Label="@Local["Summary"]"
+											  Lines="8"/>
+								</MudStack>
+							</_MudItemTemplate>
+						</_MudGridTemplate>
+					</EditForm>
 				</MudCardContent>
-			}
-		</MudCard>
-	</Authorized>
+			</_MudWrap>
+		</Authorized>
 
-	<NotAuthorized>
-		<UnauthorizedView />
-	</NotAuthorized>
+		<NotAuthorized>
+			<UnauthorizedView />
+		</NotAuthorized>
 
-</AuthorizeView>
+	</AuthorizeView>
+}
 
 
 
@@ -28,22 +47,23 @@
 	[Parameter]
 	public ulong ResourceId { get; set; } = 0;
 	protected Resource? Resource { get; set; }
+	protected bool _isLoading = true;
 
 	protected override async Task OnInitializedAsync() {
 		await base.OnInitializedAsync();
 		// If a resource ID was specified, look for the tied resource
-		if(ResourceId != 0) {
+		if(ResourceId > 0) {
 			Resource = DbContext.Resources.FirstOrDefault(x => x.Id == ResourceId);
 		}
 
 		if(Resource is null) {
 			// The resource was not found or no ID was specified
 			if(ResourceId != 0) {
-				// The specified resource does not exist
 				Snackbar.AddError("Resource does not exist. A new one will be created.");
 			}
 			Resource = new();
 			await DbContext.AddAsync(Resource);
 		}
+		_isLoading = false;
 	}
 }

@@ -1,7 +1,7 @@
 ﻿@inherits BaseComponent<PieChart<TData>>
 @typeparam TData
 
-<Chart Config="_config" Height="100"/>
+<Chart Config="_config" Height="100" />
 
 @code {
 	[Parameter, Required, NotNull]
@@ -12,37 +12,6 @@
 	protected PieConfig? _config;
 
 	protected override void OnInitialized() {
-		base.OnInitialized();
-		string fontColor = ThemeProvider.IsDarkMode
-			? "#FFFFFF"
-			: "#000000";
-
-
-		_config = new(false) {
-				Options = new() {
-					Title = new() {
-						Text = Title,
-						Display = true,
-						FontSize = 24,
-						FontColor = fontColor
-					},
-					Responsive = true,
-					
-				}
-			};
-		foreach(string label in Data.Select(x => x.UnlocalizedLabel)) {
-			_config.Data.Labels.Add(Local[label].Value);
-		}
-		_config.Data.Datasets.Add(GenerateChartDataset());
-	}
-
-	protected PieDataset<TData> GenerateChartDataset() {
-		PieDataset<TData> dataset = new(false);
-		dataset.BackgroundColor = new(Data.Select(x => x.Color).ToArray());
-		foreach(var item in Data) {
-			dataset.Add(item.Value);
-		}
-
-		return dataset;
+		_config = Data.GeneratePieChartConfig<TData>(Title, ThemeProvider.IsDarkMode);
 	}
 }

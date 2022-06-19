@@ -1,0 +1,47 @@
+﻿@typeparam TRating where TRating : RatingBase<TEntity>, new()
+@typeparam TEntity where TEntity : IIdentifiable<ulong>
+
+<MudRating EmptyIcon="@EmptyIcon"
+		   FullIcon="@FullIcon"
+		   SelectedValueChanged="@OnValueChanged">
+</MudRating>
+
+@code {
+	public readonly string FullIcon = Icons.Material.Filled.Square;
+	public readonly string EmptyIcon = Icons.Material.Outlined.Square;
+
+	[Parameter]
+	public User? User { get; set; }
+	[Parameter, Required, NotNull]
+	public AnyDexDb? DbContext { get; set; }
+	[Parameter, Required, NotNull]
+	public TEntity? Target { get; set; }
+
+	protected TRating? _rating;
+	protected int _currentValue;
+
+	public async Task OnValueChanged(int newValue) {
+		_currentValue = newValue;
+		if(DbContext is null || User is null) return;
+
+		if(_rating is null) {
+			RatingBase<TEntity>? rating = null;
+
+			rating = DbContext.Set<TRating>()
+				.FirstOrDefault(x => x.UserId == User.Id && x.TargetId == Target.Id);
+
+			rating ??= new TRating();
+
+			rating.Rating = (byte)newValue;
+			_rating = (TRating)rating;
+		}
+
+		if(_rating.Id == default) {
+			await DbContext.AddAsync(_rating);
+		}else {
+			DbContext.Entry(_rating).DetectChanges();
+		}
+
+		await DbContext.SaveChangesAsync();
+	}
+}

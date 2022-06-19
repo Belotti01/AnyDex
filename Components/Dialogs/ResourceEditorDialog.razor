@@ -1,0 +1,12 @@
+﻿<MudDialog DisableSidePadding="true" >
+	<DialogContent>
+		<ResourceEditor ResourceId="@ResourceId" />
+	</DialogContent>
+</MudDialog>
+
+@code {
+	[CascadingParameter, NotNull] 
+	MudDialogInstance? MudDialog { get; set; }
+	[Parameter]
+	public ulong ResourceId { get; set; } = 0;
+}

@@ -1,13 +1,12 @@
-﻿using System;
-using Microsoft.JSInterop;
+﻿using Microsoft.JSInterop;
 
 // See: https://www.meziantou.net/convert-datetime-to-user-s-time-zone-with-server-side-blazor.htm
 
 namespace AnyDex.Data {
-    /// <summary>
-    /// Converts any <see cref="DateTime"/> value to the Client's Timezone equivalent.
-    /// </summary>
-    public sealed class DateTimeLocalizer {
+	/// <summary>
+	/// Converts any <see cref="DateTime"/> value to the Client's Timezone equivalent.
+	/// </summary>
+	public sealed class DateTimeLocalizer {
         private readonly IJSRuntime _jsRuntime;
 
         private TimeSpan? _userOffset;
