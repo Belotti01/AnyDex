@@ -10,7 +10,7 @@
 					 Sortable
 					 Loading="_isLoading"
 					 RowsPerPage="15"
-					 ReadOnly="false"
+					 ReadOnly="@ReadOnly"
 					 EditDialogOptions="new() {NoHeader=true}"
 					 EditMode="DataGridEditMode.Form"
 					 EditTrigger="DataGridEditTrigger.OnRowClick">
@@ -70,6 +70,8 @@
 
 @code {
 	protected readonly int[] _pageSizeOptions = new int[] { 5, 15, 25, 50 };
+	[Parameter]
+	public bool ReadOnly { get; set; } = false;
 	[Parameter]
 	public IEnumerable<Resource>? Materials { get; set; }
 	public IEnumerable<Material>? Material { get; set; }
@@ -174,6 +176,6 @@
 		DialogParameters parameters = new() {
 			{ nameof(MaterialsDialog.Materials), resource.Materials }
 		};
-		ShowDialog<MaterialsDialog>("Materials", MaxWidth.Large, parameters);
+		ShowDialog<MaterialsDialog>(resource?.Title ?? "", MaxWidth.Large, parameters);
 	}
 }
