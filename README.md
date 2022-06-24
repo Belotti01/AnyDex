@@ -1,1 +1,1 @@
-<a href="https://github.com/Belotti01/AnyDex">Wiki</a>
+<a href="https://github.com/Belotti01/AnyDex/wiki">Wiki</a>
